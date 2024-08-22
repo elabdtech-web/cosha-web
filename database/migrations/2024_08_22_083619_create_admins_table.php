@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('drivers', function (Blueprint $table) {
+        Schema::create('admins', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
+            $table->enum('type', ['admin', 'super_admin'])->default('admin');
             $table->string('name');
             $table->string('phone')->nullable();
-            $table->enum('gender', ['male', 'female', 'other'])->default('male');
-            $table->string('age')->nullable();
-            $table->string('preferred_passenger')->nullable();
-            $table->text('profile_image')->default('default.png');
-            $table->text('fcm_token')->nullable();
-            $table->string('language_code')->default('en');
+            $table->text('profile_image')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_deleted')->default(false);
             $table->timestamp('deleted_at')->nullable();
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('drivers');
+        Schema::dropIfExists('admins');
     }
 };
