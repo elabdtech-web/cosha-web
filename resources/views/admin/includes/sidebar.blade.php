@@ -1,17 +1,53 @@
-<div class="l-navbar" id="nav-bar">
+<div class="sidebar show" id="side-bar">
     <nav class="nav">
-        <div> <a href="#" class="nav_logo"> <i class='bx bx-layer nav_logo-icon'></i> <span
-                    class="nav_logo-name">BBBootstrap</span> </a>
-            <div class="nav_list"> <a href="#" class="nav_link active"> <i class='bx bx-grid-alt nav_icon'></i> <span
-                        class="nav_name">Dashboard</span> </a> <a href="#" class="nav_link"> <i
-                        class='bx bx-user nav_icon'></i> <span class="nav_name">Users</span> </a> <a href="#"
-                    class="nav_link"> <i class='bx bx-message-square-detail nav_icon'></i> <span
-                        class="nav_name">Messages</span> </a> <a href="#" class="nav_link"> <i
-                        class='bx bx-bookmark nav_icon'></i> <span class="nav_name">Bookmark</span> </a> <a
-                    href="#" class="nav_link"> <i class='bx bx-folder nav_icon'></i> <span
-                        class="nav_name">Files</span> </a> <a href="#" class="nav_link"> <i
-                        class='bx bx-bar-chart-alt-2 nav_icon'></i> <span class="nav_name">Stats</span> </a> </div>
-        </div> <a href="#" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span
-                class="nav_name">SignOut</span> </a>
+        <div class="nav_logo">
+            <a href="{{ url('/') }}">
+                <img src="{{ asset('images/logo/logo.png') }}" width="150" alt="logo">
+            </a>
+        </div>
+        <div class="nav_list">
+            {{-- Dashboard --}}
+            <a href="{{ route('admin.dashboard') }}" class="nav_item active">
+                <i class='fa fa-home nav_icon'></i>
+                <span class="nav_name">Dashboard</span>
+            </a>
+            {{-- Users --}}
+            <a href="#" class="nav_item">
+                <i class='fa fa-user nav_icon'></i>
+                <span class="nav_name">Users</span>
+            </a>
+            {{-- Drivers --}}
+            <a href="#" class="nav_item">
+                <i class='fa fa-user nav_icon'></i>
+                <span class="nav_name">Drivers</span>
+            </a>
+            {{-- Rides --}}
+            <a href="#" class="nav_item">
+                <i class='fa fa-bus nav_icon'></i>
+                <span class="nav_name">Rides</span>
+            </a>
+            {{-- Wallet --}}
+            <a href="#" class="nav_item">
+                <i class='fa fa-wallet nav_icon'></i>
+                <span class="nav_name">Wallet</span>
+            </a>
+            {{-- Rewards --}}
+            <a href="#" class="nav_item">
+                <i class='fa fa-gift nav_icon'></i>
+                <span class="nav_name">Rewards</span>
+            </a>
+            {{-- Seprator --}}
+            <hr>
+            {{-- Settings --}}
+            <a href="#" class="nav_item">
+                <i class='fa fa-cog nav_icon'></i>
+                <span class="nav_name">Settings</span>
+            </a>
+            {{-- SignOut --}}
+            <a href="#" class="nav_item">
+                <i class="fa fa-file nav_icon"></i>
+                <span class="nav_name">SignOut</span>
+            </a>
+        </div>
     </nav>
 </div>

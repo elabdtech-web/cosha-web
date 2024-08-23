@@ -30,7 +30,7 @@
 </head>
 
 <body class="admin-body">
-    <div id="body-pd" class="bg-dark">
+    <div class="bg-dark vh-100">
 
         {{-- If auth then load navbar & sidebar --}}
         @auth
@@ -41,7 +41,7 @@
             @include('admin.includes.sidebar')
         @endauth
 
-        <main>
+        <main id="body-pd" class="body-pd m-3">
             @yield('content')
         </main>
     </div>
@@ -55,16 +55,14 @@
     @auth
         <script>
             document.addEventListener("DOMContentLoaded", function(event) {
-
+                // Toggle sidebar
                 $("#sidebarToggle").on('click', function() {
-                    // Toggle sidebar
-                    $("#body-pd").toggleClass("body-pd");
-                    // nav-bar
-                    $("#nav-bar").toggleClass("show");
-                    // header-toggle
-                    $("#header-toggle").toggleClass("bx-x");
                     // header
-                    $("#header").toggleClass("body-pd");
+                    $("#header").toggleClass("toggle");
+                    // side-bar
+                    $("#side-bar").toggleClass("show");
+                    // body-pd
+                    $("#body-pd").toggleClass("body-pd");
 
                 })
             });
