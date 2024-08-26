@@ -19,8 +19,13 @@ class Passenger extends Model
         'nic_no',
         'fcm_token',
         'language_code',
+        'about_me',
+        'interests',
+        'ride_preference',
+        'preferred_vehicle',
         'is_active',
         'is_deleted',
+        'deleted_at',
     ];
 
     protected $casts = [

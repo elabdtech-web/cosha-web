@@ -27,11 +27,19 @@ class PassengerController extends Controller
 
 
         // Passenger Profile
-        $passenger = Passenger::select('user_id', 'profile_image',  'name', 'phone', 'gender', 'age', 'nic_no', 'language_code', 'is_active', 'is_deleted')->where('user_id', $user->id)->first();
+        $passenger = Passenger::where('user_id', $user->id)->first();
         if (!$passenger) {
             return response()->json([
                 'message' => 'Passenger profile is not updated'
             ], 403);
+        }
+
+        // Add user email to response
+        $passenger->email = $user->email;
+
+        // Check if profile_image is null
+        if ($passenger->profile_image == null) {
+            $passenger->profile_image = asset('images/default.png');
         }
 
         // Return Passenger
@@ -42,6 +50,88 @@ class PassengerController extends Controller
             'message' => 'Passenger profile',
             'data' => $passenger
         ]);
+    }
+
+    // updateProfile
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = Auth::guard('api')->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        // Check if user has role of passenger
+        if (!$user->hasRole('passenger')) {
+            return response()->json([
+                'message' => 'Unauthorized',
+                'statusCode' => 403,
+            ], 403);
+        }
+
+        // Validate request
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'phone' => 'required',
+            'gender' => 'required',
+            'age' => 'required',
+            'nic_no' => 'required',
+            'about_me' => 'required',
+            'interests' => 'required',
+            'ride_preference' => 'required',
+            'preferred_vehicle' => 'required',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'statusCode' => 400,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
+
+        // Passenger Profile
+        $passenger = Passenger::where('user_id', $user->id)->first();
+        if (!$passenger) {
+            // Create Passenger
+            $passenger = new Passenger();
+            $passenger->user_id = $user->id;
+            $passenger->save();
+        }
+
+        if ($request->hasFile('profile_image')) {
+            $file = $request->file('profile_image');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+
+            $file->move(public_path('profile_images'), $filename);
+            $passenger->profile_image = $filename;
+        }
+
+        // Update Passenger
+        $passenger->name = $request->name;
+        $passenger->gender = $request->gender;
+        $passenger->phone = $request->phone;
+        $passenger->age = $request->age;
+        $passenger->nic_no = $request->nic_no;
+        $passenger->about_me = $request->about_me;
+        $passenger->interests = $request->interests;
+        $passenger->ride_preference = $request->ride_preference;
+        $passenger->preferred_vehicle = $request->preferred_vehicle;
+        $passenger->save();
+
+        // Return Passenger
+
+        return response()->json([
+            'success' => true,
+            'statusCode' => 200,
+            'message' => 'Passenger profile updated successfully',
+            'data' => $passenger
+        ], 200);
     }
 
     // logout

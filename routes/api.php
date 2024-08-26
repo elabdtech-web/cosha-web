@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Driver\DriverController;
+use App\Http\Controllers\Api\Driver\DriverLicenseController;
+use App\Http\Controllers\Api\Driver\DriverVehicleController;
 use App\Http\Controllers\Api\Passenger\PassengerController;
 use App\Http\Controllers\Api\PassportAuthController;
 use Illuminate\Http\Request;
@@ -18,6 +20,7 @@ Route::group(['prefix' => 'passenger'], function () {
     Route::middleware(['auth:api', 'role:passenger'])->group(function () {
         // Profile
         Route::get('profile', [PassengerController::class, 'index']);
+        Route::post('profile/update', [PassengerController::class, 'updateProfile']);
 
         // Logout
         Route::post('logout', [PassengerController::class, 'logout']);
@@ -39,6 +42,15 @@ Route::group(['prefix' => 'driver'], function () {
     Route::middleware(['auth:api', 'role:driver'])->group(function () {
         // Profile
         Route::get('profile', [DriverController::class, 'index']);
+        Route::post('profile/update', [DriverController::class, 'updateProfile']);
+
+        // Driver Vehicle
+        Route::get('vehicle', [DriverVehicleController::class, 'index']);
+        Route::post('vehicle/update', [DriverVehicleController::class, 'updateVehicle']);
+
+        // Driver License
+        Route::get('license', [DriverLicenseController::class, 'index']);
+        Route::post('license/update', [DriverLicenseController::class, 'updateLicense']);
 
         // Logout
         Route::post('logout', [DriverController::class, 'logout']);

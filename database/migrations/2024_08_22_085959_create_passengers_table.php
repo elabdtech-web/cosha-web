@@ -22,6 +22,10 @@ return new class extends Migration
             $table->text('profile_image')->nullable();
             $table->text('fcm_token')->nullable();
             $table->string('language_code')->default('en');
+            $table->text('about_me')->nullable();
+            $table->string('interests')->nullable();
+            $table->string('ride_preference')->nullable();
+            $table->string('preferred_vehicle')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_deleted')->default(false);
             $table->timestamp('deleted_at')->nullable();
