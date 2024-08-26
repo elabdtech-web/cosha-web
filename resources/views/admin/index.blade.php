@@ -16,20 +16,8 @@
             {{-- Statistics --}}
             <section class="statistics">
                 <div class="row">
-                    {{-- Total Passengers --}}
-                    <div class="col-md-2">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <div class="icon mb-3">
-                                    <i class="fa fa-user fa-2x p-3 text-primary"></i>
-                                </div>
-                                <h5 class="mb-1">Total Passengers</h5>
-                                <h2 class="text-white mb-0">{{ $data['total_passengers'] }}</h2>
-                            </div>
-                        </div>
-                    </div>
                     {{-- Total Drivers --}}
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card">
                             <div class="card-body text-center">
                                 <div class="icon mb-3">
@@ -41,7 +29,7 @@
                         </div>
                     </div>
                     {{-- Driver Requests --}}
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card">
                             <div class="card-body text-center">
                                 <div class="icon mb-3">
@@ -53,7 +41,7 @@
                         </div>
                     </div>
                     {{-- Completed Rides --}}
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card">
                             <div class="card-body text-center">
                                 <div class="icon mb-3">
@@ -65,7 +53,7 @@
                         </div>
                     </div>
                     {{-- Ongoing Rides --}}
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="card">
                             <div class="card-body text-center">
                                 <div class="icon mb-3">
@@ -73,18 +61,6 @@
                                 </div>
                                 <h5 class="mb-1">Ongoing Rides</h5>
                                 <h2 class="text-white mb-0">{{ $data['ongoing_rides'] }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    {{-- Cancelled Rides --}}
-                    <div class="col-md-2">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <div class="icon mb-3">
-                                    <i class="fa fa-users fa-2x p-3 text-danger"></i>
-                                </div>
-                                <h5 class="mb-1">Cancelled Rides</h5>
-                                <h2 class="text-white mb-0">{{ $data['cancelled_rides'] }}</h2>
                             </div>
                         </div>
                     </div>

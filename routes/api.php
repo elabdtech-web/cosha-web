@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\Driver\DriverController;
+use App\Http\Controllers\Api\Driver\DriverIdentityDocumentController;
 use App\Http\Controllers\Api\Driver\DriverLicenseController;
 use App\Http\Controllers\Api\Driver\DriverVehicleController;
 use App\Http\Controllers\Api\Passenger\PassengerController;
 use App\Http\Controllers\Api\PassportAuthController;
+use App\Models\DriverIdentityDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +53,10 @@ Route::group(['prefix' => 'driver'], function () {
         // Driver License
         Route::get('license', [DriverLicenseController::class, 'index']);
         Route::post('license/update', [DriverLicenseController::class, 'updateLicense']);
+
+        // Driver Identity document
+        Route::get('identity', [DriverIdentityDocumentController::class, 'index']);
+        Route::post('identity/update', [DriverIdentityDocumentController::class, 'updateIdentity']);
 
         // Logout
         Route::post('logout', [DriverController::class, 'logout']);

@@ -7,14 +7,16 @@
         </div>
         <div class="nav_list">
             {{-- Dashboard --}}
-            <a href="{{ route('admin.dashboard') }}" class="nav_item active">
+            <a href="{{ route('admin.dashboard') }}"
+                class="nav_item {{ Route::currentRouteName() == 'admin.dashboard' ? 'active' : '' }}">
                 <i class='fa fa-home nav_icon'></i>
                 <span class="nav_name">Dashboard</span>
             </a>
-            {{-- Users --}}
-            <a href="#" class="nav_item">
+            {{-- Passengers --}}
+            <a href="{{ route('admin.passengers') }}"
+                class="nav_item {{ Route::currentRouteName() == 'admin.passengers' ? 'active' : '' }}">
                 <i class='fa fa-user nav_icon'></i>
-                <span class="nav_name">Users</span>
+                <span class="nav_name">Passengers</span>
             </a>
             {{-- Drivers --}}
             <a href="#" class="nav_item">

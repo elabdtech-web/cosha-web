@@ -41,7 +41,7 @@
             @include('admin.includes.sidebar')
         @endauth
 
-        <main id="body-pd" class="{{ auth()->check() ? 'body-pd' : 'vh-100' }}">
+        <main id="body-pd" class="{{ auth()->check() ? 'body-pd vh-100' : 'vh-100' }}">
             @yield('content')
         </main>
     </div>
