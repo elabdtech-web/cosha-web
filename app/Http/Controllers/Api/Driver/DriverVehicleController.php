@@ -118,16 +118,18 @@ class DriverVehicleController extends Controller
         // Check if vehicle_image has a value
         if ($request->hasFile('vehicle_image')) {
             $file = $request->file('vehicle_image');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('vehicle_images'), $filename);
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/vehicle_images directory
+            $filePath = $file->storeAs('public/vehicle_images', $filename);
             $driverVechicle->vehicle_image = $filename;
         }
 
         // Check if vehicle_document has a value
         if ($request->hasFile('vehicle_document')) {
             $file = $request->file('vehicle_document');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('vehicle_documents'), $filename);
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/vehicle_documents directory
+            $filePath = $file->storeAs('public/vehicle_documents', $filename);
             $driverVechicle->vehicle_document = $filename;
         }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Passenger;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PassengerResource;
 use App\Models\Passenger;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -48,7 +49,7 @@ class PassengerController extends Controller
             'success' => true,
             'statusCode' => 200,
             'message' => 'Passenger profile',
-            'data' => $passenger
+            'data' => new PassengerResource($passenger)
         ]);
     }
 
@@ -106,9 +107,9 @@ class PassengerController extends Controller
 
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-
-            $file->move(public_path('profile_images'), $filename);
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/profile_images directory
+            $filePath = $file->storeAs('public/profile_images', $filename);
             $passenger->profile_image = $filename;
         }
 
@@ -130,7 +131,7 @@ class PassengerController extends Controller
             'success' => true,
             'statusCode' => 200,
             'message' => 'Passenger profile updated successfully',
-            'data' => $passenger
+            'data' => new PassengerResource($passenger)
         ], 200);
     }
 

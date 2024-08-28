@@ -107,15 +107,17 @@ class DriverLicenseController extends Controller
 
         if ($request->hasFile('front_image')) {
             $file = $request->file('front_image');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('license_images'), $filename);
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/license_images directory
+            $filePath = $file->storeAs('public/license_images', $filename);
             $driverLicense->front_image = $filename;
         }
 
         if ($request->hasFile('back_image')) {
             $file = $request->file('back_image');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('license_images'), $filename);
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/license_images directory
+            $filePath = $file->storeAs('public/license_images', $filename);
             $driverLicense->back_image = $filename;
         }
 

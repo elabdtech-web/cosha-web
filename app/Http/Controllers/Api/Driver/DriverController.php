@@ -108,8 +108,9 @@ class DriverController extends Controller
 
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('profile_images'), $filename);
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/profile_images directory
+            $filePath = $file->storeAs('public/profile_images', $filename);
             $driver->profile_image = $filename;
         }
 

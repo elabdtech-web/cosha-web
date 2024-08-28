@@ -41,6 +41,16 @@ class DriverIdentityDocumentController extends Controller
             ], 403);
         }
 
+        // Front Image
+        if ($driverIdentityDocument->front_image) {
+            $driverIdentityDocument->front_image = Storage::url('driver_identity_documents/' . $driverIdentityDocument->front_image);
+        }
+
+        // Back Image
+        if ($driverIdentityDocument->back_image) {
+            $driverIdentityDocument->back_image = Storage::url('driver_identity_documents/' . $driverIdentityDocument->back_image);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Driver identity document retrieved successfully',
@@ -99,18 +109,21 @@ class DriverIdentityDocumentController extends Controller
         // Front Image
         if ($request->hasFile('front_image')) {
             $file = $request->file('front_image');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('driver_identity_documents'), $filename);
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/driver_identity_documents directory
+            $filePath = $file->storeAs('public/driver_identity_documents', $filename);
             $driverIdentityDocument->front_image = $filename;
         }
 
         // Back Image
         if ($request->hasFile('back_image')) {
             $file = $request->file('back_image');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('driver_identity_documents'), $filename);
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/driver_identity_documents directory
+            $filePath = $file->storeAs('public/driver_identity_documents', $filename);
             $driverIdentityDocument->back_image = $filename;
         }
+
 
         $driverIdentityDocument->save();
 
