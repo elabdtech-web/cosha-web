@@ -16,7 +16,6 @@
                 <li><a class="dropdown-item" href="#">Something else here</a></li>
             </ul>
         </div>
-
         {{-- Dropdown --}}
         <div class="dropdown">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
@@ -27,7 +26,11 @@
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li><a class="dropdown-item" href="#">Chat</a></li>
                 <li><a class="dropdown-item" href="#">Profile</a></li>
-                <li><a class="dropdown-item" href="#">Logout</a></li>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    @method('post')
+                    <li><button class="dropdown-item" type="submit">Logout</button></li>
+                </form>
             </ul>
         </div>
     </div>

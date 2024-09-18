@@ -230,3 +230,224 @@ a:hover {
 .sidebar .nav .nav_list .nav_item .nav_icon {
     padding-right: 0.5rem;
 }
+
+
+/* shared rides  */
+        .shared-card {
+            background-color: rgba(255, 255, 255, 0.07);
+            border: none;
+        }
+        .table-section {
+            display: none;
+        }
+        .active-table {
+            display: block;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .driver-profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .tab-btn {
+            background-color:  rgba(255, 255, 255, 0.02);
+            border: none;
+            border-radius: 25px;
+            padding: 6px 34px;
+            margin-right: 5px;
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .tab-btn.active {
+            background-color: rgba(143, 120, 221, 1);
+        }
+
+        .shared-card .btn {
+            background-color: #3d3d6b;
+        }
+
+        .btn-cancel {
+            color: #ff4d4d;
+            border: none;
+        }
+
+        .map-img {
+            width: 100%;
+            height: 200px;
+            background-color: #333;
+        }
+
+        .payment-icon {
+            width: 20px;
+        }
+
+        .action-buttons button {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 20px;
+            margin-right: 5px;
+            font-size: 15px;
+        }
+        .ongoing-card{
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        .border-right {
+        border-right: 1px solid #ffffff; /* White border */
+    }
+
+     .form-section {
+            margin-bottom: 40px;
+        }
+        .form-section h5 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .upload-image-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        .upload-doc {
+            display: inline-block;
+            background-color: transparent;
+            color: #aaa;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 0.875rem;
+        }
+        .form-section input,
+        .form-section input:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        .form-section select{
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        /* wallet form image  */
+
+         .upload-image-box-wallet {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width:40%;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+      /* Wallet Custom styles */
+        .balance-card {
+            background-color: #1c1b29;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .balance-card .balance-amount {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .wallet-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .btn-withdraw {
+            background-color: #4d7cff;
+            color: white;
+            border-radius: 10px;
+            padding: 6px 34px;
+            border: none;
+        }
+
+        .btn-withdraw:hover {
+            background-color: #365dcc;
+        }
+
+
+
+            /* Custom styles for a more professional dark mode table */
+    .table-custom {
+        color: #fff;
+        background-color: #1c1c1e;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table-custom thead {
+        background-color: #333;
+        border-bottom: 2px solid #484848;
+    }
+
+    .table-custom thead th {
+        color: #bfbfbf;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.9rem;
+        border: none;
+    }
+
+    .table-custom tbody tr {
+        transition: background-color 0.3s ease;
+    }
+
+    .table-custom tbody tr:hover {
+        background-color: #484848;
+    }
+
+    .table-custom tbody td {
+        border-top: 1px solid #484848;
+        vertical-align: middle;
+    }
+
+    .table-custom tbody td a.btn {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    /* Add slight padding around the table */
+    .table-container {
+        padding: 15px;
+        border-radius: 10px;
+        background-color: #2c2c2e;
+    }
+
+
+    .location-details p{
+       font-size: 10px;
+    }
+
+      /* {{-- vertical dashed line --}} */
+
+   .dashed-line {
+        border-left: 1px dashed #fff;
+        height: 40px;
+        margin: 2px 2px;
+    }

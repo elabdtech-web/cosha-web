@@ -21,4 +21,9 @@ class PassengerController extends Controller
     {
         return view('admin.passengers.create');
     }
+
+    public function show(Passenger $passenger)
+    {
+        return view('admin.passengers.view', compact('passenger'));
+    }
 }

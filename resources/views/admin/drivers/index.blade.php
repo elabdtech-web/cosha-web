@@ -7,8 +7,9 @@
             {{-- Heading --}}
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Passengers</h3>
+                    <h4 class="mb-0">Drivers</h4>
                     {{-- Add Passenger --}}
+                    <a href="{{ route('admin.drivers.create') }}" class="btn btn-primary btn-sm">Add new</a>
                 </div>
             </div>
             {{-- End Heading --}}
@@ -17,7 +18,7 @@
             <div class="row mt-4">
                 <div class="col-md-12">
                     <div class="table-responsive">
-                        @include('admin.passengers.table')
+                        @include('admin.drivers.table')
                     </div>
                 </div>
             </div>

@@ -7,17 +7,16 @@
             {{-- Heading --}}
             <div class="row">
                 <div class="col-md-12 d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Passengers</h3>
-                    {{-- Add Passenger --}}
+                    <h4 class="mb-0">Rewards</h4>
+                    {{-- Add Wallet --}}
+                    <a href="{{ route('admin.rewards.create') }}" class="btn btn-primary btn-sm">Add new</a>
                 </div>
             </div>
-            {{-- End Heading --}}
-
             {{-- Table --}}
             <div class="row mt-4">
                 <div class="col-md-12">
                     <div class="table-responsive">
-                        @include('admin.passengers.table')
+                        @include('admin.rewards.table')
                     </div>
                 </div>
             </div>

@@ -6,9 +6,8 @@
         <div class="content p-3">
             {{-- Heading --}}
             <div class="row">
-                <div class="col-md-12 d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Passengers</h3>
-                    {{-- Add Passenger --}}
+                <div class="col-md-12">
+                    <h4 class="mb-0">Rides</h4>
                 </div>
             </div>
             {{-- End Heading --}}
@@ -17,7 +16,7 @@
             <div class="row mt-4">
                 <div class="col-md-12">
                     <div class="table-responsive">
-                        @include('admin.passengers.table')
+                        @include('admin.rides.table')
                     </div>
                 </div>
             </div>

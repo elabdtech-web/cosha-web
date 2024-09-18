@@ -12,6 +12,10 @@ class AuthController extends Controller
     // load login form
     public function login()
     {
+        // if authenticated then redirect to dashboard
+        if (auth()->check()) {
+            return redirect()->route('admin.dashboard');
+        }
         return view('admin.auth.login');
     }
 
