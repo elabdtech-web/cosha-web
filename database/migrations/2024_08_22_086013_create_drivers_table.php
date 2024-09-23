@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -22,8 +21,6 @@ return new class extends Migration
             $table->text('profile_image')->nullable();
             $table->text('fcm_token')->nullable();
             $table->string('language_code')->default('en');
-            $table->string('license_no')->nullable();
-            $table->string('nic_no')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_deleted')->default(false);
             $table->timestamp('deleted_at')->nullable();

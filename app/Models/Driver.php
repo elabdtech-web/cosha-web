@@ -47,4 +47,20 @@ class Driver extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function vehicles()
+    {
+        return $this->hasOne(DriverVehicle::class);
+    }
+
+    // 'identity_document', 'license'
+    public function identity_document()
+    {
+        return $this->hasOne(DriverIdentityDocument::class);
+    }
+
+    public function license()
+    {
+        return $this->hasOne(DriverLicense::class);
+    }
 }

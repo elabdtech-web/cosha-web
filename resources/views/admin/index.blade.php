@@ -2,7 +2,7 @@
 
 @section('content')
     <!--main content wrapper-->
-    <div class="height-100">
+    <div class="vh-100">
         <div class="content ">
             {{-- Heading --}}
             <div class="row">

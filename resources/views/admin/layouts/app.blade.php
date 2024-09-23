@@ -30,6 +30,7 @@
 </head>
 
 <body class="admin-body">
+    @include('sweetalert::alert')
     <div class="bg-dark">
         {{-- If auth then load navbar & sidebar --}}
         @auth
@@ -39,7 +40,7 @@
             {{-- Sidebar --}}
             @include('admin.includes.sidebar')
         @endauth
-        <main id="body-pd" class="{{ auth()->check() ? 'body-pd vh-100' : '' }}">
+        <main id="body-pd" class="{{ auth()->check() ? 'body-pd' : 'vh-100' }}">
             @yield('content')
         </main>
     </div>

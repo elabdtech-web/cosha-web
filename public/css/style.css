@@ -308,6 +308,7 @@ a:hover {
 
      .form-section {
             margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.7); /* Lighter placeholder text */
         }
         .form-section h5 {
             margin-bottom: 20px;
@@ -335,15 +336,28 @@ a:hover {
             padding: 10px;
             font-size: 0.875rem;
         }
-        .form-section input,
-        .form-section input:focus {
-            background-color: rgba(255, 255, 255, 0.1);
+       .form-section input,
+       .form-section input:focus {
+            background-color: rgba(255, 255, 255, 0.1); /* Dark background */
+            color: #fff; /* White text */
             border: none;
+            outline: none; /* Remove default browser outline on focus */
         }
 
-        .form-section select{
-            background-color: rgba(255, 255, 255, 0.1);
+        .form-section select,
+        .form-section select option {
+            background-color: rgba(255, 255, 255, 0.1); /* Dark background for select and options */
+            color: #fff; /* White text */
             border: none;
+}
+
+        .form-section select:focus {
+            outline: none; /* Remove default focus outline */
+        }
+
+        .form-section select option {
+            background-color: rgba(0, 0, 0, 0.9); /* Darker background for dropdown options */
+            color: #fff; /* White text for options */
         }
 
         /* wallet form image  */
@@ -359,6 +373,7 @@ a:hover {
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 1rem;
+            cursor: pointer;
         }
 
       /* Wallet Custom styles */

@@ -15,14 +15,15 @@
             <!-- User Info Section -->
             <div class="col-md-4">
                 <div class="card shared-card p-4 mb-2">
-                    <img src="{{ asset('images/sample/profile.png') }}" alt="User Photo" class="profile-img d-block">
+                    <img src="{{ isset($driver->profile_image) ? Storage::url('images/drivers/' . $driver->profile_image) : asset('images/default.png') }}"
+                        alt="User Photo" class="profile-img d-block">
                     <div class="profile-section mt-2 p-3">
                         <span class="text-muted">Name *</span>
-                        <p class="mb-3">Youjiro Hanma</p>
+                        <p class="mb-3">{{ $driver->name }}</p>
                         <span class="text-muted">Gender*</span>
-                        <p class="mb-3">Male</p>
+                        <p class="mb-3">{{ $driver->gender }}</p>
                         <span class="text-muted">Phone no *</span>
-                        <p class="mb-3">0435 45690440</p>
+                        <p class="mb-3">{{ $driver->phone }}</p>
                         <span class="text-muted">Address *</span>
                         <p class="">Boston meat club street 29/1, closed end</p>
                         {{-- hr --}}

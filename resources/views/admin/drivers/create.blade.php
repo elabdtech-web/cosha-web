@@ -9,7 +9,7 @@
                 <h3 class="mb-0">Create Drivers</h3>
 
                 {{-- Form --}}
-                <form action="{{ route('admin.drivers.store') }}" method="POST">
+                <form action="{{ route('admin.drivers.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @include('admin.drivers.form')
                 </form>
