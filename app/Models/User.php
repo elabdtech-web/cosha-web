@@ -74,4 +74,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Driver::class);
     }
+
+    public function admin()
+    {
+        return $this->hasOne(Admin::class);
+    }
 }

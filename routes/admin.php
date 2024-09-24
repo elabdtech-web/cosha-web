@@ -32,4 +32,6 @@ Route::prefix('admin')->middleware('auth', 'role:admin')->name('admin.')->group(
 
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings');
 
+    Route::post('/profile/update', [SettingsController::class, 'update'])->name('profile.update');
+
 });

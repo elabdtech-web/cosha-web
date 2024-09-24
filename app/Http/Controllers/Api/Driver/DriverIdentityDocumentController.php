@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Driver;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DriverIdentityDocuments;
 use App\Models\Driver;
 use App\Models\DriverIdentityDocument;
 use Illuminate\Http\Request;
@@ -41,20 +42,11 @@ class DriverIdentityDocumentController extends Controller
             ], 403);
         }
 
-        // Front Image
-        if ($driverIdentityDocument->front_image) {
-            $driverIdentityDocument->front_image = Storage::url('driver_identity_documents/' . $driverIdentityDocument->front_image);
-        }
-
-        // Back Image
-        if ($driverIdentityDocument->back_image) {
-            $driverIdentityDocument->back_image = Storage::url('driver_identity_documents/' . $driverIdentityDocument->back_image);
-        }
 
         return response()->json([
             'success' => true,
             'message' => 'Driver identity document retrieved successfully',
-            'data' => $driverIdentityDocument
+            'data' => new DriverIdentityDocuments($driverIdentityDocument)
         ], 200);
     }
 
@@ -72,11 +64,15 @@ class DriverIdentityDocumentController extends Controller
         $validator = Validator::make($request->all(), [
             'given_name' => 'required',
             'surname' => 'required',
+            'father_name' => 'nullable',
             'document_number' => 'required',
+            'cnic_number' => 'required',
             'issued_date' => 'required|date|before:expiry_date',
             'expiry_date' => 'required|date|after:issued_date',
             'front_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
             'back_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+            'cnic_copy_front' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+            'cnic_copy_back' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         if ($validator->fails()) {
@@ -102,6 +98,8 @@ class DriverIdentityDocumentController extends Controller
 
         $driverIdentityDocument->given_name = $request->given_name;
         $driverIdentityDocument->surname = $request->surname;
+        $driverIdentityDocument->father_name = $request->father_name;
+        $driverIdentityDocument->cnic_number = $request->cnic_number;
         $driverIdentityDocument->document_number = $request->document_number;
         $driverIdentityDocument->issued_date = $request->issued_date;
         $driverIdentityDocument->expiry_date = $request->expiry_date;
@@ -110,8 +108,8 @@ class DriverIdentityDocumentController extends Controller
         if ($request->hasFile('front_image')) {
             $file = $request->file('front_image');
             $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
-            // Store the file in the storage/app/public/driver_identity_documents directory
-            $filePath = $file->storeAs('public/driver_identity_documents', $filename);
+            // Store the file in the storage/app/public/drivers directory
+            $filePath = $file->storeAs('public/images/drivers', $filename);
             $driverIdentityDocument->front_image = $filename;
         }
 
@@ -119,9 +117,27 @@ class DriverIdentityDocumentController extends Controller
         if ($request->hasFile('back_image')) {
             $file = $request->file('back_image');
             $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
-            // Store the file in the storage/app/public/driver_identity_documents directory
-            $filePath = $file->storeAs('public/driver_identity_documents', $filename);
+            // Store the file in the storage/app/public/drivers directory
+            $filePath = $file->storeAs('public/images/drivers', $filename);
             $driverIdentityDocument->back_image = $filename;
+        }
+
+        // CNIC Copy Front
+        if ($request->hasFile('cnic_copy_front')) {
+            $file = $request->file('cnic_copy_front');
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/drivers directory
+            $filePath = $file->storeAs('public/images/drivers', $filename);
+            $driverIdentityDocument->cnic_copy_front = $filename;
+        }
+
+        // CNIC Copy Back
+        if ($request->hasFile('cnic_copy_back')) {
+            $file = $request->file('cnic_copy_back');
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/drivers directory
+            $filePath = $file->storeAs('public/images/drivers', $filename);
+            $driverIdentityDocument->cnic_copy_back = $filename;
         }
 
 
@@ -130,7 +146,7 @@ class DriverIdentityDocumentController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Driver identity document updated successfully',
-            'data' => $driverIdentityDocument
+            'data' => new DriverIdentityDocuments($driverIdentityDocument)
         ], 200);
     }
 }

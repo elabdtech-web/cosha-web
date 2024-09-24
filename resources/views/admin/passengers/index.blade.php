@@ -11,7 +11,6 @@
                     {{-- Add Passenger --}}
                 </div>
             </div>
-            {{-- End Heading --}}
 
             {{-- Table --}}
             <div class="row mt-4">

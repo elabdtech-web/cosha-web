@@ -9,7 +9,6 @@ use App\Models\DriverLicense;
 use App\Models\DriverVehicle;
 use App\Models\Role;
 use App\Models\User;
-use Crypt;
 use Flasher\Toastr\Laravel\Facade\Toastr;
 use Hash;
 use Illuminate\Http\Request;

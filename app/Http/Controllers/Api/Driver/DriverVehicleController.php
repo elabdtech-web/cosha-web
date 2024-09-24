@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Driver;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DriverVehicleResource;
 use App\Models\Driver;
 use App\Models\DriverVehicle;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class DriverVehicleController extends Controller
     {
         $user = Auth::guard('api')->user();
 
+
         if (!$user) {
             return response()->json([
                 'message' => 'Unauthorized'
@@ -32,6 +34,7 @@ class DriverVehicleController extends Controller
             ], 403);
         }
 
+
         // driverVechicle
         $driverVechicle = DriverVehicle::where('driver_id', $driver->id)->first();
         if (!$driverVechicle) {
@@ -41,27 +44,14 @@ class DriverVehicleController extends Controller
             ], 403);
         }
 
-        // Check if vehicle_image is null
-        if ($driverVechicle->vehicle_image) {
-            $driverVechicle->vehicle_image = asset('storage/vehicle_images/' . $driverVechicle->vehicle_image);
-        } else {
-            $driverVechicle->vehicle_image = asset('images/default.png');
-        }
-
-        // Check if vehicle_document is null
-        if ($driverVechicle->vehicle_document) {
-            $driverVechicle->vehicle_document = asset('storage/vehicle_documents/' . $driverVechicle->vehicle_document);
-        } else {
-            $driverVechicle->vehicle_document = asset('images/default.png');
-        }
 
         // Return Driver Vehicle
 
         return response()->json([
             'success' => true,
             'statusCode' => 200,
-            'message' => 'Driver profile',
-            'data' => $driverVechicle
+            'message' => 'Driver Vehicle',
+            'data' => new DriverVehicleResource($driverVechicle)
         ]);
     }
 
@@ -110,6 +100,7 @@ class DriverVehicleController extends Controller
             $driverVechicle->driver_id = $driver->id;
         }
 
+        $driverVechicle->vehicle_name = $request->vehicle_name;
         $driverVechicle->make = $request->make;
         $driverVechicle->model = $request->model;
         $driverVechicle->type = $request->type;
@@ -119,8 +110,8 @@ class DriverVehicleController extends Controller
         if ($request->hasFile('vehicle_image')) {
             $file = $request->file('vehicle_image');
             $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
-            // Store the file in the storage/app/public/vehicle_images directory
-            $filePath = $file->storeAs('public/vehicle_images', $filename);
+            // Store the file in the storage/app/public/drivers directory
+            $filePath = $file->storeAs('public/drivers', $filename);
             $driverVechicle->vehicle_image = $filename;
         }
 
@@ -128,8 +119,8 @@ class DriverVehicleController extends Controller
         if ($request->hasFile('vehicle_document')) {
             $file = $request->file('vehicle_document');
             $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
-            // Store the file in the storage/app/public/vehicle_documents directory
-            $filePath = $file->storeAs('public/vehicle_documents', $filename);
+            // Store the file in the storage/app/public/drivers directory
+            $filePath = $file->storeAs('public/drivers', $filename);
             $driverVechicle->vehicle_document = $filename;
         }
 
@@ -137,12 +128,12 @@ class DriverVehicleController extends Controller
 
         // Get vehicle_image path
         if ($driverVechicle->vehicle_image) {
-            $driverVechicle->vehicle_image = Storage::url('vehicle_images/' . $driverVechicle->vehicle_image);
+            $driverVechicle->vehicle_image = Storage::url('drivers/' . $driverVechicle->vehicle_image);
         }
 
         // Check if vehicle_document is null
         if ($driverVechicle->vehicle_document) {
-            $driverVechicle->vehicle_document = Storage::url('vehicle_documents/' . $driverVechicle->vehicle_document);
+            $driverVechicle->vehicle_document = Storage::url('drivers/' . $driverVechicle->vehicle_document);
         }
 
         return response()->json([

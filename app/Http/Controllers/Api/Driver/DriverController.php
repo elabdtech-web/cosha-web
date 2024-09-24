@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Driver;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DriverProfileResource;
 use App\Models\Driver;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -38,11 +39,11 @@ class DriverController extends Controller
 
         $driver->email = $user->email;
 
-        // Check if profile_image is null
-        $driver->profile_image = asset('images/default.png');
-        if ($driver->profile_image) {
-            $driver->profile_image = asset('storage/profile_images' . $driver->profile_image);
-        }
+        // // Check if profile_image is null
+        // $driver->profile_image = asset('images/default.png');
+        // if ($driver->profile_image) {
+        //     $driver->profile_image = asset('storage/images/drivers/' . $driver->profile_image);
+        // }
 
         // Return Driver
 
@@ -50,7 +51,7 @@ class DriverController extends Controller
             'success' => true,
             'statusCode' => 200,
             'message' => 'Driver profile',
-            'data' => $driver
+            'data' => new DriverProfileResource($driver)
         ]);
     }
 
@@ -73,8 +74,6 @@ class DriverController extends Controller
             'phone' => 'required',
             'gender' => 'required',
             'age' => 'required',
-            'nic_no' => 'required',
-            'license_no' => 'required',
             'preferred_passenger' => 'required',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
@@ -102,15 +101,13 @@ class DriverController extends Controller
         $driver->phone = $request->phone;
         $driver->gender = $request->gender;
         $driver->age = $request->age;
-        $driver->nic_no = $request->nic_no;
-        $driver->license_no = $request->license_no;
         $driver->preferred_passenger = $request->preferred_passenger;
 
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
             // Store the file in the storage/app/public/profile_images directory
-            $filePath = $file->storeAs('public/profile_images', $filename);
+            $filePath = $file->storeAs('public/images/drivers', $filename);
             $driver->profile_image = $filename;
         }
 
@@ -118,7 +115,7 @@ class DriverController extends Controller
 
         // Get driver profile_image with url
 
-        $driver->profile_image = $driver->profile_image ? Storage::url('profile_images/' . $driver->profile_image) : asset('images/default.png');
+        $driver->profile_image = $driver->profile_image ? Storage::url('images/drivers/' . $driver->profile_image) : asset('images/default.png');
 
         // Return response
 

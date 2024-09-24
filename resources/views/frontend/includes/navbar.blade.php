@@ -36,7 +36,7 @@
                         <a href="{{ route('home') }}" class="btn btn-primary" role="button">Dashboard</a>
                     @endif
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-primary" role="button">Login</a>
+                    <a href="{{ route('admin.login') }}" class="btn btn-primary" role="button">Login</a>
                 @endauth
             </div>
         </div>

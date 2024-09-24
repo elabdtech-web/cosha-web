@@ -10,22 +10,19 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td><img src="https://via.placeholder.com/50" class="img-fluid rounded" alt="Profile"></td>
-            <td>Aaron Chapman</td>
-            <td>Male</td>
-            <td>1234 Elm Street, New York, NY</td>
-            <td>2023-09-15</td>
-            <td><a href="{{ route('admin.passengers.show', 1) }}" class="btn btn-primary btn-sm">View</a></td>
-        </tr>
+        @foreach ($passengers as $passenger)
+            <tr>
+                <td><img src="{{ isset($passenger->profile_image) ? Storage::url('images/passengers/' . $passenger->profile_image) : asset('images/default.png') }}"
+                        class="img-fluid rounded-circle" width="40" alt="Profile"></td>
+                <td>{{ $passenger->name }}</td>
+                <td>{{ $passenger->gender }}</td>
+                <td>{{ $passenger->phone }}</td>
+                <td>{{ $passenger->created_at }}</td>
+                <td><a href="{{ route('admin.passengers.show', $passenger->id) }}"
+                        class="btn btn-primary btn-sm">View</a></td>
+            </tr>
+        @endforeach
         <!-- Additional rows can be added below -->
-        <tr>
-            <td><img src="https://via.placeholder.com/50" class="img-fluid rounded" alt="Profile"></td>
-            <td>Jane Doe</td>
-            <td>Female</td>
-            <td>5678 Oak Avenue, San Francisco, CA</td>
-            <td>2024-09-12</td>
-            <td><a href="{{ route('admin.passengers.show', 2) }}" class="btn btn-primary btn-sm">View</a></td>
-        </tr>
+
     </tbody>
 </table>

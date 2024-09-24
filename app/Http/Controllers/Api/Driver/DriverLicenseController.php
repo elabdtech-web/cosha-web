@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Driver;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DriverLicenseResource;
 use App\Models\Driver;
 use App\Models\DriverLicense;
 use Illuminate\Http\Request;
@@ -40,21 +41,10 @@ class DriverLicenseController extends Controller
                 'message' => 'Driver license is not updated'
             ], 403);
         }
-
-        // Check if front_image is null
-        if ($driverLicense->front_image) {
-            $driverLicense->front_image = Storage::url('license_images' . $driverLicense->front_image);
-        }
-
-        // Check if back_image is null
-        if ($driverLicense->back_image) {
-            $driverLicense->back_image = Storage::url('license_images' . $driverLicense->back_image);
-        }
-
         return response()->json([
             'success' => true,
             'message' => 'Driver license retrieved successfully',
-            'data' => $driverLicense
+            'data' => new DriverLicenseResource($driverLicense),
         ], 200);
     }
 
@@ -108,16 +98,16 @@ class DriverLicenseController extends Controller
         if ($request->hasFile('front_image')) {
             $file = $request->file('front_image');
             $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
-            // Store the file in the storage/app/public/license_images directory
-            $filePath = $file->storeAs('public/license_images', $filename);
+            // Store the file in the storage/app/public/drivers directory
+            $filePath = $file->storeAs('public/drivers', $filename);
             $driverLicense->front_image = $filename;
         }
 
         if ($request->hasFile('back_image')) {
             $file = $request->file('back_image');
             $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
-            // Store the file in the storage/app/public/license_images directory
-            $filePath = $file->storeAs('public/license_images', $filename);
+            // Store the file in the storage/app/public/drivers directory
+            $filePath = $file->storeAs('public/drivers', $filename);
             $driverLicense->back_image = $filename;
         }
 
@@ -127,20 +117,11 @@ class DriverLicenseController extends Controller
         $driverLicense->expiry_date = $request->expiry_date;
         $driverLicense->save();
 
-        // Check if front_image is null
-        if ($driverLicense->front_image) {
-            $driverLicense->front_image = Storage::url('license_images/' . $driverLicense->front_image);
-        }
-
-        // Check if back_image is null
-        if ($driverLicense->back_image) {
-            $driverLicense->back_image = Storage::url('license_images/' . $driverLicense->back_image);
-        }
 
         return response()->json([
             'success' => true,
             'message' => 'Driver license updated successfully',
-            'data' => $driverLicense
+            'data' => new DriverLicenseResource($driverLicense),
         ], 200);
     }
 }

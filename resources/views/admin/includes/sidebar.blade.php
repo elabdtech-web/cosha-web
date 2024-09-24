@@ -52,7 +52,7 @@
             </a>
             {{-- SignOut --}}
             <a href="#" class="nav_item">
-                <i class="fa fa-file nav_icon"></i>
+                <i class="fa fa-arrow-right nav_icon"></i>
                 <span class="nav_name">SignOut</span>
             </a>
         </div>

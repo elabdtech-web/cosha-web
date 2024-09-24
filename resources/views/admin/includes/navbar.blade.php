@@ -20,8 +20,9 @@
         <div class="dropdown">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
                 aria-expanded="false">
-                <img src="https://mdbootstrap.com/img/new/avatars/2.jpg" class="rounded-circle" height="50"
-                    alt="Black and White Portrait of a Man" loading="lazy" />
+                <img src="{{ isset(auth()->user()->admin->profile_image) ? Storage::url('images/profile/' . auth()->user()->admin->profile_image) : asset('images/default.png') }}"
+                    class="rounded-circle " height="45" width="50" alt="Black and White Portrait of a Man"
+                    loading="lazy" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li><a class="dropdown-item" href="#">Chat</a></li>
