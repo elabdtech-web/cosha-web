@@ -235,8 +235,8 @@ class PassportAuthController extends Controller
             // Create unique name for profile_image
             $profile_image_name = Str::random(40) . '.' . $request->file('profile_image')->getClientOriginalExtension();
             // upload image to storage with unqie name
-            $request->file('profile_image')->storeAs('public/profile_images', $profile_image_name);
-            $profile_image_path = 'storage/profile_images/' . $profile_image_name;
+            $request->file('profile_image')->storeAs('public/drivers', $profile_image_name);
+            $profile_image_path = 'storage/drivers/' . $profile_image_name;
         }
 
         // Create Driver
