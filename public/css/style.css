@@ -466,3 +466,23 @@ a:hover {
         height: 40px;
         margin: 2px 2px;
     }
+
+    /* Summernote */
+        /* Style for the Summernote toolbar (header) */
+        .note-toolbar {
+            background-color: rgba(77, 68, 68, 0.7) !important;
+            /* Header background color */
+        }
+
+        .note-toolbar .note-btn {
+            color: rgb(61, 52, 52) !important;
+            /* Header text color */
+        }
+
+        /* Style for the Summernote editor body */
+        .note-editable {
+            color: rgb(211, 200, 200) !important;
+            /* Body text color */
+            background-color: rgba(77, 68, 68, 0.7) !important;
+            /* Body background color */
+        }

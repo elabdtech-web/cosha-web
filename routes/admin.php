@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\DriverController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\PassengerController;
@@ -33,5 +34,11 @@ Route::prefix('admin')->middleware('auth', 'role:admin')->name('admin.')->group(
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings');
 
     Route::post('/profile/update', [SettingsController::class, 'update'])->name('profile.update');
+    Route::post('/privacy/update', [SettingsController::class, 'updatePrivacy'])->name('privacy.update');
+    Route::post('/terms/update', [SettingsController::class, 'updateTerms'])->name('terms.update');
+
+    // contact us
+
+    Route::get('contact-requests', [ContactController::class, 'index'])->name('requests.index');
 
 });

@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class PassengerController extends Controller
 {
@@ -135,6 +136,67 @@ class PassengerController extends Controller
         ], 200);
     }
 
+    public function updatePassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:8|confirmed',
+            ]);
+
+            $user = Auth::user(); // Get the currenty authenticated user
+
+            if (!$user) {
+                throw ValidationException::withMessages([
+                    'message' => ['Unauthorized'],
+                ]);
+            }
+
+            //check if the current password if matches the stored one pass
+            if (!Hash::check($request->current_password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'current_password' => ['The provided password does not match your current password.'],
+                ]);
+            }
+
+            // Update the Password
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Password updated successfully',
+            ], 200);
+
+        } catch (ValidationException $e) {
+            // If validation fails, return error response
+            return response()->json([
+                'status' => false,
+                'error' => $e->errors(),
+            ], 422); // 422 Unprocessable Entity for validation errors
+        }
+    }
+
+    public function sofDeleteAcount()
+    {
+        // Get current authenticated user
+        $user = Auth::guard('api')->user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        // Soft delete the passengers assionated with the user
+        Passenger::where('user_id', $user->id)->update(['is_deleted' => 1, 'deleted_at' => now()]);
+
+        $user->token()->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Your account has been successfully deleted.',
+        ], 200);
+    }
     // logout
     public function logout(): JsonResponse
     {

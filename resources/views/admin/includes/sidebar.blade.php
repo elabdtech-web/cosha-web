@@ -42,6 +42,12 @@
                 <i class='fa fa-gift nav_icon'></i>
                 <span class="nav_name">Rewards</span>
             </a>
+            {{-- Contact Requests --}}
+            <a href="{{ route('admin.requests.index') }}"
+                class="nav_item {{ Route::currentRouteName() == 'admin.requests.index' ? 'active' : '' }}">
+                <i class='fa fa-users nav_icon'></i>
+                <span class="nav_name">Requests</span>
+            </a>
             {{-- Seprator --}}
             <hr>
             {{-- Settings --}}

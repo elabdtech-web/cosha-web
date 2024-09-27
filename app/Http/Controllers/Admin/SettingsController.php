@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PrivacyPolicy;
+use App\Models\TermsCondition;
 use App\Models\User;
 use Hash;
 use Illuminate\Http\Request;
@@ -16,7 +18,10 @@ class SettingsController extends Controller
         $user = User::where('id', $authId)
             ->with('admin')
             ->first();
-        return view('admin.settings.edit', compact('user'));
+
+        $privacyPolicy = PrivacyPolicy::first();
+        $termsCondition = TermsCondition::first();
+        return view('admin.settings.edit', compact('user', 'privacyPolicy', 'termsCondition'));
     }
 
     public function update(Request $request)
@@ -47,5 +52,32 @@ class SettingsController extends Controller
 
         return redirect()->back()->with('success', 'Profile updated successfully');
     }
+
+    public function updateTerms(Request $request)
+    {
+        $request->validate([
+            'terms_conditions' => 'required|string',
+        ]);
+
+        $terms = TermsCondition::firstOrNew();
+        $terms->content = $request->terms_conditions;
+        $terms->save();
+
+        return redirect()->back()->with('success', 'Terms and Conditions updated successfully');
+    }
+
+    public function updatePrivacy(Request $request)
+    {
+        $request->validate([
+            'privacy_policy' => 'required|string',
+        ]);
+
+        $policy = PrivacyPolicy::firstOrNew();
+        $policy->content = $request->privacy_policy;
+        $policy->save();
+
+        return redirect()->back()->with('success', 'Privacy and Policy updated successfully');
+    }
+
 
 }

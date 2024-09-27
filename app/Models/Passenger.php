@@ -42,4 +42,9 @@ class Passenger extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function favoriteDrivers()
+    {
+        return $this->belongsToMany(Driver::class, 'favorites');
+    }
 }

@@ -63,4 +63,10 @@ class Driver extends Model
     {
         return $this->hasOne(DriverLicense::class);
     }
+
+    public function favoritedByPassengers()
+    {
+        return $this->belongsToMany(Passenger::class, 'favorites');
+    }
+
 }

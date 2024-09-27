@@ -60,14 +60,59 @@
                         </div>
                     </div>
                     <div id="completed-section" class="table-section">
-                        Status
+                        {{-- Privacy and Policy Form --}}
+                        <form action="{{ route('admin.privacy.update') }}" method="POST">
+                            @csrf
+                            <div class="row g-3">
+                                <!-- Privacy and Policy Field -->
+                                <div class="col-md-12">
+                                    <label for="privacy_policy" class="form-label">Privacy and Policy</label>
+                                    <textarea id="summernote1" name="privacy_policy">{{ $privacyPolicy->content ?? '' }}</textarea>
+                                </div>
+                            </div>
+                            <!-- Save Button -->
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
+                            </div>
+                        </form>
+
+                        {{-- Terms and Conditions Form --}}
+                        <form action="{{ route('admin.terms.update') }}" method="POST" class="mt-5">
+                            @csrf
+                            <div class="row g-3">
+                                <!-- Terms and Conditions Field -->
+                                <div class="col-md-12">
+                                    <label for="terms_conditions" class="form-label">Terms and Conditions</label>
+                                    <textarea id="summernote2" name="terms_conditions">{!! $termsCondition->content ?? '' !!}</textarea>
+                                </div>
+                            </div>
+                            <!-- Save Button -->
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
     <script>
+        $('#summernote1').summernote({
+            placeholder: 'Enter Privacy and Policy content...',
+            tabsize: 2,
+            height: 100,
+        });
+
+        $('#summernote2').summernote({
+            placeholder: 'Enter Terms and Conditions content...',
+            tabsize: 2,
+            height: 100,
+        });
+
         function showSection(section) {
             // Hide all sections
             document.getElementById('ongoing-section').classList.remove('active-table');
@@ -96,7 +141,6 @@
             reader.onload = (event) => {
                 document.querySelector('#image_img').src = event.target.result;
             }
-
             reader.readAsDataURL(file);
         });
     </script>

@@ -1,13 +1,15 @@
 <?php
 
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\Driver\DriverController;
 use App\Http\Controllers\Api\Driver\DriverIdentityDocumentController;
 use App\Http\Controllers\Api\Driver\DriverLicenseController;
 use App\Http\Controllers\Api\Driver\DriverVehicleController;
+use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\Passenger\PassengerController;
+use App\Http\Controllers\Api\PassengerAddressController;
 use App\Http\Controllers\Api\PassportAuthController;
-use App\Models\DriverIdentityDocument;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\Settings\SettingController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -24,15 +26,32 @@ Route::group(['prefix' => 'passenger'], function () {
         Route::get('profile', [PassengerController::class, 'index']);
         Route::post('profile/update', [PassengerController::class, 'updateProfile']);
 
+        // update password
+        Route::post('password/update', [PassengerController::class, 'updatePassword']);
+
+        // account delete
+        Route::delete('account/delete', [PassengerController::class, 'sofDeleteAcount']);
+
         // Logout
         Route::post('logout', [PassengerController::class, 'logout']);
+
+        // favorite route
+        Route::post('favorite-driver', [FavoriteController::class, 'favoriteDriver']);
+        Route::delete('unfavorite-driver', [FavoriteController::class, 'unfavoriteDriver']);
+        Route::get('favorite-driver-details', [FavoriteController::class, 'favoriteDriverDetails']);
+        // language
+        Route::get('language', [SettingController::class, 'getLanguage']);
+
+        // addressess
+        Route::get('/passenger-addresses', [PassengerAddressController::class, 'index']);
+        Route::post('/passenger-addresses', [PassengerAddressController::class, 'store']);
+        Route::get('/passenger/details/{id}', [PassengerAddressController::class, 'show']);
     });
     // End of Authenticated Routes of Passenger
 
 });
 
 // End of APIs of passenger with group
-
 
 // ---------------- APIs of driver with group ---------------- //
 Route::group(['prefix' => 'driver'], function () {
@@ -58,9 +77,21 @@ Route::group(['prefix' => 'driver'], function () {
         Route::get('identity', [DriverIdentityDocumentController::class, 'index']);
         Route::post('identity/update', [DriverIdentityDocumentController::class, 'updateIdentity']);
 
+        // update password
+        Route::post('password/update', [DriverController::class, 'updatePassword']);
+
+        // account delete
+        Route::delete('account/delete', [DriverController::class, 'sofDeleteAcount']);
+
         // Logout
         Route::post('logout', [DriverController::class, 'logout']);
+
+        // language
+        Route::get('language', [SettingController::class, 'getLanguage']);
     });
     // End of Authenticated Routes of Driver
 
 });
+
+Route::get('privacy-policy', [SettingController::class, 'index']);
+Route::post('contact-request', [ContactController::class, 'store']);

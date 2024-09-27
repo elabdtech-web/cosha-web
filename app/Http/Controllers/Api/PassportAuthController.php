@@ -35,7 +35,7 @@ class PassportAuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'message' => 'Validation error',
                 'errors' => $validator->errors()
             ], 422);
@@ -44,8 +44,7 @@ class PassportAuthController extends Controller
         // Check if user already exists
         if (User::where('email', $request->email)->exists()) {
             return response()->json([
-                'success' => false,
-                'statusCode' => 409,
+                'status' => false,
                 'message' => 'User already exists.',
             ], 409);
         }
@@ -54,8 +53,7 @@ class PassportAuthController extends Controller
         $role = Role::where('name', 'passenger')->first();
         if (!$role) {
             return response()->json([
-                'success' => false,
-                'statusCode' => 500,
+                'status' => false,
                 'message' => 'Something went wrong.',
             ], 500);
         }
@@ -95,19 +93,18 @@ class PassportAuthController extends Controller
             // Delete user
             $user->delete();
             return response()->json([
-                'success' => false,
-                'statusCode' => 500,
+                'status' => false,
                 'message' => 'Something went wrong.',
             ], 500);
         }
 
         return response()->json([
-            'success' => true,
-            'statusCode' => 200,
+            'status' => true,
             'message' => 'Passenger has been registered successfully.',
             'accessToken' => $accessToken,
             'data' => [
                 'user_id' => $user->id,
+                'passenger_id' => $passenger->id
             ],
         ], 200);
     }
@@ -124,7 +121,7 @@ class PassportAuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'message' => 'Validation error',
                 'errors' => $validator->errors()
             ], 422);
@@ -133,27 +130,39 @@ class PassportAuthController extends Controller
         // Check if email exist
 
         $user = User::where('email', $request->email)->first();
+
         if (!$user) {
             return response()->json([
-                'success' => false,
-                'statusCode' => 401,
-                'message' => 'Email does not exist.',
-                'errors' => 'Unauthorized',
-            ], 401);
+                'status' => false,
+                'message' => 'User not found.',
+                'error' => 'Not Found',
+            ], 404);
         }
 
+        // Find the associated passenger record
+        $passenger = Passenger::where('user_id', $user->id)->first();
+
+        // Check if the passenger record exists
+        if (!$passenger) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Your account has been deleted.',
+                'error' => 'Not Found',
+            ], 404);
+        }
         // Check if user exists
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-
             $user = Auth::user();
 
             $user = $request->user();
+
             $tokenResult = $user->createToken('CoshaByElabdTechJWTAuthenticationToken');
+
             $accessToken = $tokenResult->accessToken;
 
 
             return response()->json([
-                'success' => true,
+                'status' => true,
                 'statusCode' => 200,
                 'message' => 'Passenger has been logged successfully.',
                 'accessToken' => $accessToken,
@@ -165,7 +174,7 @@ class PassportAuthController extends Controller
             // return $this->respondWithToken($token);
         } else {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'statusCode' => 401,
                 'message' => 'Invalid credentials.',
                 'errors' => 'Invalid credentials.',
@@ -192,7 +201,7 @@ class PassportAuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'message' => 'Validation error',
                 'errors' => $validator->errors()
             ], 422);
@@ -201,8 +210,7 @@ class PassportAuthController extends Controller
         // Check if user already exists
         if (User::where('email', $request->email)->exists()) {
             return response()->json([
-                'success' => false,
-                'statusCode' => 409,
+                'status' => false,
                 'message' => 'User already exists.',
             ], 409);
         }
@@ -211,12 +219,11 @@ class PassportAuthController extends Controller
         $role = Role::where('name', 'driver')->first();
         if (!$role) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'statusCode' => 500,
                 'message' => 'Something went wrong.',
             ], 500);
         }
-
 
         $user = User::create([
             'email' => $request->email,
@@ -254,15 +261,13 @@ class PassportAuthController extends Controller
             // Delete user
             $user->delete();
             return response()->json([
-                'success' => false,
-                'statusCode' => 500,
+                'status' => false,
                 'message' => 'Something went wrong.',
             ], 500);
         }
 
         return response()->json([
-            'success' => true,
-            'statusCode' => 200,
+            'status' => true,
             'message' => 'Driver has been registered successfully.',
             'accessToken' => $accessToken,
             'data' => [
@@ -281,7 +286,7 @@ class PassportAuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'message' => 'Validation error',
                 'errors' => $validator->errors()
             ], 422);
@@ -291,10 +296,20 @@ class PassportAuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             return response()->json([
-                'success' => false,
-                'statusCode' => 401,
+                'status' => false,
                 'message' => 'Email does not exist.',
                 'errors' => 'Unauthorized',
+            ], 401);
+        }
+
+        $driver = Driver::where('user_id', $user->id)->first();
+        // check where driver deleted_at is 1 then not he cannt login and send error your account is deleted
+
+        if (!$driver) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Your account has been deleted.',
+                'error' => 'Unauthorized',
             ], 401);
         }
 
@@ -302,8 +317,7 @@ class PassportAuthController extends Controller
             $tokenResult = $user->createToken('CoshaByElabdTechJWTAuthenticationToken');
             $accessToken = $tokenResult->accessToken;
             return response()->json([
-                'success' => true,
-                'statusCode' => 200,
+                'status' => true,
                 'message' => 'Driver has been logged in successfully.',
                 'accessToken' => $accessToken,
                 'data' => [
@@ -313,8 +327,7 @@ class PassportAuthController extends Controller
         }
 
         return response()->json([
-            'success' => false,
-            'statusCode' => 401,
+            'status' => false,
             'message' => 'Unauthorized',
         ], 401);
     }
