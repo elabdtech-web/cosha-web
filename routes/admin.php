@@ -36,6 +36,8 @@ Route::prefix('admin')->middleware('auth', 'role:admin')->name('admin.')->group(
     Route::post('/profile/update', [SettingsController::class, 'update'])->name('profile.update');
     Route::post('/privacy/update', [SettingsController::class, 'updatePrivacy'])->name('privacy.update');
     Route::post('/terms/update', [SettingsController::class, 'updateTerms'])->name('terms.update');
+    Route::post('/help/update', [SettingsController::class, 'updateHelp'])->name('help.update');
+    Route::post('/about/update', [SettingsController::class, 'updateAbout'])->name('about.update');
 
     // contact us
 

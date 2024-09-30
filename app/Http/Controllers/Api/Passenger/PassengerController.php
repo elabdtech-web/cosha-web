@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Passenger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PassengerResource;
 use App\Models\Passenger;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,7 @@ class PassengerController extends Controller
             'data' => new PassengerResource($passenger)
         ]);
     }
+
 
     // updateProfile
     public function updateProfile(Request $request): JsonResponse
@@ -197,6 +199,65 @@ class PassengerController extends Controller
             'message' => 'Your account has been successfully deleted.',
         ], 200);
     }
+
+    // Suggestions for Passenger
+
+    public function suggestPassengers(Request $request)
+    {
+        // $request->validate([
+        //     'latitude' => 'required',
+        //     'longitude' => 'required|',
+        // ]);
+
+        // $userLatitude = $request->input('latitude');
+        // $userLongitude = $request->input('longitude');
+
+        // // Find passengers nearby within 5 km
+        // $suggestions = DB::table('passengers_address')
+        //     ->select('passenger_id', 'name', 'details', 'latitude', 'longitude')
+        //     ->havingRaw("
+        //     (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))
+        //     < 5
+        // ", [$userLatitude, $userLongitude, $userLatitude])
+        //     ->limit(10) // Limit to 10 suggestions
+        //     ->get();
+
+        $suggestions = DB::table('passengers')
+            ->where('deleted_at', null)
+            ->limit(10) // Limit to 10 suggestions
+            ->get();
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Suggestions fetched successfully.',
+            'data' => PassengerResource::collection($suggestions),
+        ], 200);
+    }
+
+    // search passengers
+
+    public function search(Request $request)
+    {
+        // Build the query
+        $query = Passenger::query()
+            ->where('deleted_at', null);
+
+        // Apply filters based on request
+
+        if ($request->filled('name')) {
+            $query->where('name', 'LIKE', '%' . $request->input('name') . '%');
+        }
+
+        $passengers = $query->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Passengers fetched successfully.',
+            'data' => PassengerResource::collection($passengers),
+        ]);
+    }
+
     // logout
     public function logout(): JsonResponse
     {

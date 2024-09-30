@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\About;
+use App\Models\HelpSupport;
 use App\Models\PrivacyPolicy;
 use App\Models\TermsCondition;
 use App\Models\User;
@@ -21,7 +23,9 @@ class SettingsController extends Controller
 
         $privacyPolicy = PrivacyPolicy::first();
         $termsCondition = TermsCondition::first();
-        return view('admin.settings.edit', compact('user', 'privacyPolicy', 'termsCondition'));
+        $helpSupport = HelpSupport::first();
+        $aboutUs = About::first();
+        return view('admin.settings.edit', compact('user', 'privacyPolicy', 'termsCondition', 'helpSupport', 'aboutUs'));
     }
 
     public function update(Request $request)
@@ -79,5 +83,31 @@ class SettingsController extends Controller
         return redirect()->back()->with('success', 'Privacy and Policy updated successfully');
     }
 
+
+    public function updateHelp(Request $request)
+    {
+        $request->validate([
+            'help_support' => 'required|string',
+        ]);
+
+        $help = HelpSupport::firstOrNew();
+        $help->content = $request->help_support;
+        $help->save();
+
+        return redirect()->back()->with('success', 'Help and Support updated successfully');
+    }
+
+    public function updateAbout(Request $request)
+    {
+        $request->validate([
+            'about_us' => 'required|string',
+        ]);
+
+        $about = About::firstOrNew();
+        $about->content = $request->about_us;
+        $about->save();
+
+        return redirect()->back()->with('success', 'About Us updated successfully');
+    }
 
 }

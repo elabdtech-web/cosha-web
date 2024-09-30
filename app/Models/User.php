@@ -68,7 +68,7 @@ class User extends Authenticatable
     // Passenger
     public function passenger()
     {
-        return $this->belongsTo(Passenger::class);
+        return $this->hasOne(Passenger::class);
     }
     // Driver
     public function driver()
@@ -80,4 +80,13 @@ class User extends Authenticatable
     {
         return $this->hasOne(Admin::class);
     }
+
+    // Define the relationship between users (passengers) and their friends
+
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+            ->withTimestamps();
+    }
+
 }

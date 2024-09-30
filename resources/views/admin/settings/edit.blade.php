@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('content')
-    <div class="vh-100">
+    <div class="">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -16,7 +16,7 @@
                         </li>
                     </ul>
                     <!-- Ride Detail Sections -->
-                    <div id="ongoing-section" class="table-section active-table">
+                    <div id="ongoing-section" class="table-section active-table vh-100">
                         <div class="container d-flex justify-content-center mt-5">
                             <div class="col-12 col-md-8 col-lg-6 card p-4 shadow-sm rounded form-section">
                                 <!-- Profile Image Section -->
@@ -61,7 +61,7 @@
                     </div>
                     <div id="completed-section" class="table-section">
                         {{-- Privacy and Policy Form --}}
-                        <form action="{{ route('admin.privacy.update') }}" method="POST">
+                        <form action="{{ route('admin.privacy.update') }}" class="" method="POST">
                             @csrf
                             <div class="row g-3">
                                 <!-- Privacy and Policy Field -->
@@ -91,6 +91,38 @@
                                 <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
                             </div>
                         </form>
+
+                        {{-- Help and Support Form  --}}
+                        <form action="{{ route('admin.help.update') }}" method="POST" class="mt-5">
+                            @csrf
+                            <div class="row g-3">
+                                <!-- Help and Support Field -->
+                                <div class="col-md-12">
+                                    <label for="help_support" class="form-label">Help and Support</label>
+                                    <textarea id="summernote3" name="help_support">{!! $helpSupport->content ?? '' !!}</textarea>
+                                </div>
+                            </div>
+                            <!-- Save Button -->
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
+                            </div>
+                        </form>
+
+                        {{-- About Us Form --}}
+                        <form action="{{ route('admin.about.update') }}" method="POST" class="mt-5">
+                            @csrf
+                            <div class="row g-3">
+                                <!-- About Us Field -->
+                                <div class="col-md-12">
+                                    <label for="about_us" class="form-label">About Us</label>
+                                    <textarea id="summernote4" name="about_us">{!! $aboutUs->content ?? '' !!}</textarea>
+                                </div>
+                            </div>
+                            <!-- Save Button -->
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary px-4 py-2 mb-2">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -109,6 +141,18 @@
 
         $('#summernote2').summernote({
             placeholder: 'Enter Terms and Conditions content...',
+            tabsize: 2,
+            height: 100,
+        });
+
+        $('#summernote3').summernote({
+            placeholder: 'Enter Help and Support content...',
+            tabsize: 2,
+            height: 100,
+        });
+
+        $('#summernote4').summernote({
+            placeholder: 'Enter About Us content...',
             tabsize: 2,
             height: 100,
         });

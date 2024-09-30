@@ -6,12 +6,12 @@ use App\Http\Controllers\Api\Driver\DriverIdentityDocumentController;
 use App\Http\Controllers\Api\Driver\DriverLicenseController;
 use App\Http\Controllers\Api\Driver\DriverVehicleController;
 use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\Passenger\FriendController;
 use App\Http\Controllers\Api\Passenger\PassengerController;
 use App\Http\Controllers\Api\PassengerAddressController;
 use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\Settings\SettingController;
 use Illuminate\Support\Facades\Route;
-
 
 // ---------------- APIs of passenger with group ---------------- //
 
@@ -46,6 +46,18 @@ Route::group(['prefix' => 'passenger'], function () {
         Route::get('/passenger-addresses', [PassengerAddressController::class, 'index']);
         Route::post('/passenger-addresses', [PassengerAddressController::class, 'store']);
         Route::get('/passenger/details/{id}', [PassengerAddressController::class, 'show']);
+
+        // passengers friends
+
+        Route::post('/add-friend', [FriendController::class, 'addFriend']);
+        Route::get('/get-friends', [FriendController::class, 'getFriends']);
+        Route::post('/remove-friend', [FriendController::class, 'removeFriend']);
+        Route::get('/friend-details', [FriendController::class, 'FriendDetails']);
+
+        // suggest passengers
+        Route::get('/suggest-passengers', [PassengerController::class, 'suggestPassengers']);
+
+        Route::get('/search', [PassengerController::class, 'search']);
     });
     // End of Authenticated Routes of Passenger
 
@@ -95,3 +107,6 @@ Route::group(['prefix' => 'driver'], function () {
 
 Route::get('privacy-policy', [SettingController::class, 'index']);
 Route::post('contact-request', [ContactController::class, 'store']);
+
+Route::get('help-support', [SettingController::class, 'getHelpSupport']);
+Route::get('about-us', [SettingController::class, 'getAboutUs']);

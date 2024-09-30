@@ -18,7 +18,7 @@ class PassengerResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'email' => User::find($this->user_id)->email,
+            'email' => User::find($this->user_id)->email ?? null,
             'user_id' => $this->user_id,
             'name' => $this->name,
             'phone' => $this->phone,
@@ -26,9 +26,9 @@ class PassengerResource extends JsonResource
             'age' => $this->age,
             'nic_no' => $this->nic_no,
             'profile_image' => Storage::url('profile_images/' . $this->profile_image),
-            'about' => $this->about,
+            'about_me' => $this->about_me,
             'ride_preference' => $this->ride_preference,
-            'prefred_vehicle' => $this->prefred_vehicle
+            'preferred_vehicle' => $this->preferred_vehicle
         ];
     }
 }
