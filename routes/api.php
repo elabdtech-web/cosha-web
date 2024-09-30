@@ -37,6 +37,7 @@ Route::group(['prefix' => 'passenger'], function () {
 
         // favorite route
         Route::post('favorite-driver', [FavoriteController::class, 'favoriteDriver']);
+        Route::get('favorite-drivers-list', [FavoriteController::class, 'listFavoriteDrivers']);
         Route::delete('unfavorite-driver', [FavoriteController::class, 'unfavoriteDriver']);
         Route::get('favorite-driver-details', [FavoriteController::class, 'favoriteDriverDetails']);
         // language
@@ -44,7 +45,7 @@ Route::group(['prefix' => 'passenger'], function () {
 
         // addressess
         Route::get('/passenger-addresses', [PassengerAddressController::class, 'index']);
-        Route::post('/passenger-addresses', [PassengerAddressController::class, 'store']);
+        Route::post('/store/passenger-addresses', [PassengerAddressController::class, 'store']);
         Route::get('/passenger/details/{id}', [PassengerAddressController::class, 'show']);
 
         // passengers friends
