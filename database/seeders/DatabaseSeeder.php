@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
         // load users
         $this->call(UsersTableSeeder::class);
 
-        // load languages
+        // load notification settings
+        $this->call(NotificationSettingSeeder::class);
+
     }
 }

@@ -20,18 +20,10 @@ class SettingController extends Controller
     {
         $privacyPolicy = PrivacyPolicy::first();
 
-        if (!$privacyPolicy) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Privacy Policy retrieved successfully',
-                'data' => [],
-            ], 200);
-        }
-
         return response()->json([
             'status' => true,
             'message' => 'Privacy Policy retrieved successfully',
-            'data' => $privacyPolicy->content ?? [],
+            'data' => $privacyPolicy->content ?? '',
         ], 200);
     }
 
@@ -43,14 +35,14 @@ class SettingController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'About Us retrieved successfully',
-                'data' => [],
+                'data' => '',
             ], 200);
         }
 
         return response()->json([
             'status' => true,
             'message' => 'About Us retrieved successfully',
-            'data' => $aboutUs->content ?? [],
+            'data' => $aboutUs->content ?? '',
         ], 200);
     }
 
@@ -62,14 +54,14 @@ class SettingController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Help & Support retrieved successfully',
-                'data' => [],
+                'data' => '',
             ], 200);
         }
 
         return response()->json([
             'status' => true,
             'message' => 'Help & Support retrieved successfully',
-            'data' => $helpSupport->content ?? [],
+            'data' => $helpSupport->content ?? '',
         ], 200);
     }
     public function getLanguage(Request $request)

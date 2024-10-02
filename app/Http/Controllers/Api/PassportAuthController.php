@@ -239,11 +239,10 @@ class PassportAuthController extends Controller
 
         // Upload profile_image if exist
         if ($request->hasFile('profile_image')) {
-            // Create unique name for profile_image
-            $profile_image_name = Str::random(40) . '.' . $request->file('profile_image')->getClientOriginalExtension();
-            // upload image to storage with unqie name
-            $request->file('profile_image')->storeAs('public/drivers', $profile_image_name);
-            $profile_image_path = 'storage/drivers/' . $profile_image_name;
+            $file = $request->file('profile_image');
+            $filename = time() . rand(111, 999) . '.' . $file->getClientOriginalExtension();
+            // Store the file in the storage/app/public/profile_images directory
+            $filePath = $file->storeAs('public/images/drivers', $filename);
         }
 
         // Create Driver
@@ -254,7 +253,7 @@ class PassportAuthController extends Controller
             'gender' => $request->gender,
             'age' => $request->age,
             'preferred_passenger' => $request->preferred_passenger,
-            'profile_image' => $profile_image_name ?? null,
+            'profile_image' => $filename ?? null,
         ]);
 
         if (!$driver) {
@@ -294,6 +293,7 @@ class PassportAuthController extends Controller
 
         // Check if email exist
         $user = User::where('email', $request->email)->first();
+
         if (!$user) {
             return response()->json([
                 'status' => false,

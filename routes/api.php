@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Driver\DriverLicenseController;
 use App\Http\Controllers\Api\Driver\DriverVehicleController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\Passenger\FriendController;
+use App\Http\Controllers\Api\Passenger\NotificationController;
 use App\Http\Controllers\Api\Passenger\PassengerController;
 use App\Http\Controllers\Api\PassengerAddressController;
 use App\Http\Controllers\Api\PassportAuthController;
@@ -59,6 +60,12 @@ Route::group(['prefix' => 'passenger'], function () {
         Route::get('/suggest-passengers', [PassengerController::class, 'suggestPassengers']);
 
         Route::get('/search', [PassengerController::class, 'search']);
+
+        // passenger notification
+
+
+        Route::get('/notifications/list', [NotificationController::class, 'getNotifications']);
+        Route::put('/notifications/update', [NotificationController::class, 'updateNotifications']);
     });
     // End of Authenticated Routes of Passenger
 
@@ -101,6 +108,11 @@ Route::group(['prefix' => 'driver'], function () {
 
         // language
         Route::get('language', [SettingController::class, 'getLanguage']);
+
+        // notification setting
+
+        Route::get('/notifications/list', [\App\Http\Controllers\Api\Driver\NotificationController::class, 'getNotifications']);
+        Route::put('/notifications/update', [\App\Http\Controllers\Api\Driver\NotificationController::class, 'updateNotifications']);
     });
     // End of Authenticated Routes of Driver
 

@@ -41,7 +41,6 @@ class UsersTableSeeder extends Seeder
             ]
         );
 
-
         // Create Passenger User
         $user = User::create(
             [
@@ -66,7 +65,6 @@ class UsersTableSeeder extends Seeder
                 'nic_no' => '123456789V',
             ]
         );
-
 
         // Create Driver User
         $user = User::create(

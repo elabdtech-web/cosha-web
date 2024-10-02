@@ -37,12 +37,12 @@ class DriverLicenseController extends Controller
         $driverLicense = DriverLicense::where('driver_id', $driver->id)->first();
         if (!$driverLicense) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'message' => 'Driver license is not updated'
             ], 403);
         }
         return response()->json([
-            'success' => true,
+            'status' => true,
             'message' => 'Driver license retrieved successfully',
             'data' => new DriverLicenseResource($driverLicense),
         ], 200);
@@ -72,7 +72,7 @@ class DriverLicenseController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'statusCode' => 400,
                 'message' => $validator->errors()
             ], 400);
@@ -82,7 +82,7 @@ class DriverLicenseController extends Controller
         $driver = Driver::where('user_id', $user->id)->first();
         if (!$driver) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'message' => 'Driver profile is not updated'
             ], 403);
         }
@@ -119,7 +119,7 @@ class DriverLicenseController extends Controller
 
 
         return response()->json([
-            'success' => true,
+            'status' => true,
             'message' => 'Driver license updated successfully',
             'data' => new DriverLicenseResource($driverLicense),
         ], 200);

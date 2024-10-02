@@ -150,14 +150,14 @@ class PassengerController extends Controller
 
             if (!$user) {
                 throw ValidationException::withMessages([
-                    'message' => ['Unauthorized'],
+                    'message' => 'Unauthorized',
                 ]);
             }
 
             //check if the current password if matches the stored one pass
             if (!Hash::check($request->current_password, $user->password)) {
                 throw ValidationException::withMessages([
-                    'current_password' => ['The provided password does not match your current password.'],
+                    'current_password' => 'The provided password does not match your current password.',
                 ]);
             }
 

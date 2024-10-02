@@ -17,6 +17,7 @@ class DriverLicenseResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'name' => $this->name,
             'driver_id' => $this->driver_id,
             'license_no' => $this->license_no,
             'issued_date' => $this->issued_date,
