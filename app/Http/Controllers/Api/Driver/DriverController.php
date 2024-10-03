@@ -52,7 +52,6 @@ class DriverController extends Controller
 
         return response()->json([
             'success' => true,
-            'statusCode' => 200,
             'message' => 'Driver profile',
             'data' => new DriverProfileResource($driver)
         ]);

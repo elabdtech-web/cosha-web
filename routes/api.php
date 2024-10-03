@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Passenger\NotificationController;
 use App\Http\Controllers\Api\Passenger\PassengerController;
 use App\Http\Controllers\Api\PassengerAddressController;
 use App\Http\Controllers\Api\PassportAuthController;
+use App\Http\Controllers\Api\RideController;
 use App\Http\Controllers\Api\Settings\SettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,7 @@ Route::group(['prefix' => 'passenger'], function () {
         Route::get('/passenger-addresses', [PassengerAddressController::class, 'index']);
         Route::post('/store/passenger-addresses', [PassengerAddressController::class, 'store']);
         Route::get('/passenger/details/{id}', [PassengerAddressController::class, 'show']);
+        Route::post('/update/passenger-addresses/{id}', [PassengerAddressController::class, 'edit']);
 
         // passengers friends
 
@@ -62,10 +64,15 @@ Route::group(['prefix' => 'passenger'], function () {
         Route::get('/search', [PassengerController::class, 'search']);
 
         // passenger notification
-
+        Route::post('/rides/create', action: [RideController::class, 'createRide']);
 
         Route::get('/notifications/list', [NotificationController::class, 'getNotifications']);
         Route::put('/notifications/update', [NotificationController::class, 'updateNotifications']);
+
+        Route::post('/accept/offer', [RideController::class, 'acceptRideOffer']);
+
+        Route::get('/list/offers', [RideController::class, 'listOffers']);
+        Route::get('/offers/details', [RideController::class, 'offerDetails']);
     });
     // End of Authenticated Routes of Passenger
 
@@ -113,6 +120,9 @@ Route::group(['prefix' => 'driver'], function () {
 
         Route::get('/notifications/list', [\App\Http\Controllers\Api\Driver\NotificationController::class, 'getNotifications']);
         Route::put('/notifications/update', [\App\Http\Controllers\Api\Driver\NotificationController::class, 'updateNotifications']);
+
+        Route::post('/send/offer', [RideController::class, 'sendOffer']);
+        Route::get('/rides/list', [RideController::class, 'listRides']);
     });
     // End of Authenticated Routes of Driver
 
