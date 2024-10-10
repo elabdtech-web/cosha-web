@@ -18,7 +18,7 @@ use App\Models\Ride;
 use App\Models\RideOffer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class RideController extends Controller
 {
@@ -93,7 +93,6 @@ class RideController extends Controller
                 'error' => $e->getMessage()
             ], 422);
         }
-
     }
 
     public function listRides()
@@ -150,8 +149,8 @@ class RideController extends Controller
             'dropoff_location' => $ride->dropoff_location,
             'no_passengers' => $ride->no_passengers,
             'ride_uuid' => $ride->uuid,
-            'vehicle_image' => Storage::url('drivers/' . $driver->vehicles->vehicle_image),
-            'profile' => Storage::url('profile_images/' . $driver->profile_image)
+            'vehicle_image' => Storage::url('drivers/' . $driver->vehicles->vehicle_image) ?? Storage::url('default.png'),
+            'profile' => Storage::url('profile_images/' . $driver->profile_image) ?? Storage::url('default.png')
         ];
         // Dispatch the offer event with the offer and ride data
         OfferData::dispatch($offerData);

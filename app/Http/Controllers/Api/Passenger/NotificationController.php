@@ -14,14 +14,12 @@ class NotificationController extends Controller
         $notifications = NotificationSetting::where('user_id', Auth::user()->id)->first();
 
         if (!$notifications) {
-            $notifications = new NotificationSetting();
-            $notifications->user_id = Auth::user()->id;
-            $notifications->save();
-            return response()->json([
-                'status' => true,
-                'message' => 'Notifications retrieved successfully',
-                'data' => $notifications
-            ]);
+            $new_notifications = new NotificationSetting();
+            $new_notifications->user_id = Auth::user()->id;
+            $new_notifications->save();
+
+            // Get new created notifications
+            $notifications = NotificationSetting::where('user_id', Auth::user()->id)->first();
         }
 
         return response()->json([

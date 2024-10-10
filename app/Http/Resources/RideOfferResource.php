@@ -19,7 +19,7 @@ class RideOfferResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'distance' => (double) $this->distance ?? 0.0,
+            'distance' => (float) $this->distance ?? 0.0,
             'ride_type' => Ride::find($this->ride_id)->type,
             'ride_id' => $this->ride_id,
             'pickup_location' => Ride::find($this->ride_id)->pickup_location,
@@ -27,12 +27,12 @@ class RideOfferResource extends JsonResource
             'time' => $this->time ?? null,
             'driver_id' => $this->driver_id,
             'name' => Driver::find($this->driver_id)->name ?? null,
-            'offered_price' => (double) $this->offered_price,
+            'offered_price' => (float) $this->offered_price,
             'status' => $this->status,
-            'vehicle_name' => Driver::find($this->driver_id)->vehicles->vehicle_name ?? null,
-            'profile' => Storage::url('profile_images/' . Driver::find($this->driver_id)->profile_image ?? '') ?? null,
+            'vehicle_name' => Driver::find($this->driver_id)->vehicles->vehicle_name ?? Storage::url('default.png'),
+            'profile' => Storage::url('profile_images/' . Driver::find($this->driver_id)->profile_image ?? 'default.png') ?? Storage::url('default.png'),
             'no_passengers' => Ride::find($this->ride_id)->no_passengers,
-            'vehicle_image' => ''
+            'vehicle_image' => Storage::url('default.png')
         ];
     }
 }

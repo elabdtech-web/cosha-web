@@ -25,7 +25,7 @@ class PassengerResource extends JsonResource
             'gender' => $this->gender,
             'age' => $this->age,
             'nic_no' => $this->nic_no,
-            'profile_image' => Storage::url('profile_images/' . $this->profile_image),
+            'profile_image' => $this->profile_image ? Storage::url('profile_images/' . $this->profile_image) : Storage::url('default.png'),
             'about_me' => $this->about_me,
             'ride_preference' => $this->ride_preference,
             'preferred_vehicle' => $this->preferred_vehicle

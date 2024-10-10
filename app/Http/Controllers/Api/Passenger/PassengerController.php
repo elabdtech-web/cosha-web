@@ -42,7 +42,7 @@ class PassengerController extends Controller
 
         // Check if profile_image is null
         if ($passenger->profile_image == null) {
-            $passenger->profile_image = asset('images/default.png');
+            $passenger->profile_image = 'default.png';
         }
 
         // Return Passenger
@@ -169,7 +169,6 @@ class PassengerController extends Controller
                 'status' => true,
                 'message' => 'Password updated successfully',
             ], 200);
-
         } catch (ValidationException $e) {
             // If validation fails, return error response
             return response()->json([
