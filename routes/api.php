@@ -73,6 +73,12 @@ Route::group(['prefix' => 'passenger'], function () {
 
         Route::get('/list/offers', [RideController::class, 'listOffers']);
         Route::get('/offers/details', [RideController::class, 'offerDetails']);
+
+
+        Route::post('/ride/cancel', [RideController::class, 'cancelRidePassenger']);
+
+        Route::post('review/driver', [RideController::class, 'postReview']);
+
     });
     // End of Authenticated Routes of Passenger
 
@@ -123,6 +129,12 @@ Route::group(['prefix' => 'driver'], function () {
 
         Route::post('/send/offer', [RideController::class, 'sendOffer']);
         Route::get('/rides/list', [RideController::class, 'listRides']);
+        // start ride
+        Route::post('/start/ride', [RideController::class, 'startRide']);
+        // complete ride route
+        Route::post('/complete/ride', [RideController::class, 'completeRide']);
+
+        Route::post('/ride/cancel', [RideController::class, 'cancelRide']);
     });
     // End of Authenticated Routes of Driver
 

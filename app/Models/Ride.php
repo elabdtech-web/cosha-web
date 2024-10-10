@@ -45,4 +45,9 @@ class Ride extends Model
     {
         return $this->belongsTo(Driver::class);
     }
+
+    public function rideDaily()
+    {
+        return $this->hasMany(RideDaily::class);
+    }
 }

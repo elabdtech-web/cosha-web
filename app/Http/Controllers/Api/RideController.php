@@ -14,7 +14,9 @@ use App\Http\Resources\RideOfferResource;
 use App\Http\Resources\RideResource;
 use App\Models\Driver;
 use App\Models\Passenger;
+use App\Models\Review;
 use App\Models\Ride;
+use App\Models\RideDaily;
 use App\Models\RideOffer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -191,6 +193,14 @@ class RideController extends Controller
             ], 404);
         }
 
+        // Check if the authenticated user is the creator of the ride
+        if ($ride->user_id == auth()->id()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You cannot accept your own ride offer.',
+            ], 403);  // 403 Forbidden status code
+        }
+
 
         // Get the driver's vehicle details (assuming driver's vehicle details are stored somewhere)
 
@@ -257,7 +267,7 @@ class RideController extends Controller
         ]);
 
         $offer = RideOffer::where('id', $request->ride_offer_id)
-            ->where('status', 'offered')
+            ->where('status', 'accepted')
             ->first();
 
         if (!$offer) {
@@ -272,5 +282,250 @@ class RideController extends Controller
             'message' => 'Offer details retrieved successfully',
             'data' => new RideOfferResource($offer)
         ]);
+    }
+
+
+    public function startRide(Request $request)
+    {
+        $request->validate([
+            'ride_id' => 'required|exists:rides,id',
+            'longitude' => 'required',
+            'latitude' => 'required',
+        ]);
+
+        $driver_id = Auth::user()->id;
+        $driver = Driver::where('user_id', $driver_id)->first();
+
+        $ride = Ride::where('id', $request->ride_id)
+            ->where('driver_id', $driver->id)
+            ->where('status', 'accepted')
+            ->first();
+
+        if (!$ride) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ride not found or already started.',
+            ], 404);
+        }
+
+        // Switch condition for ride types
+        switch ($ride->type) {
+            case 'daily':
+                // Handle RideDaily start
+                $rideDaily = RideDaily::create([
+                    'ride_id' => $ride->id,
+                    'start_time' => now(),
+                    'complete_time' => now(),
+                ]);
+
+                break;
+
+            case 'shared':
+                // Handle RideShared start (not implemented yet)
+                // $rideShared = RideShared::create([...]);
+                break;
+
+            case 'night':
+                // Handle RideNight start (not implemented yet)
+                // $rideNight = RideNight::create([...]);
+                break;
+
+            default:
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid ride type.',
+                ], 400);
+        }
+
+
+        $ride->update([
+            'status' => 'started',
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ride started successfully',
+        ], 200);
+    }
+
+    // complete ride from driver side
+
+    public function completeRide(Request $request)
+    {
+        $request->validate([
+            'ride_id' => 'required|exists:rides,id',
+            'longitude' => 'required',
+            'latitude' => 'required',
+        ]);
+
+        $driver_id = Auth::user()->id;
+        $driver = Driver::where('user_id', $driver_id)->first();
+
+        $ride = Ride::where('id', $request->ride_id)
+            ->where('driver_id', $driver->id)
+            ->where('status', 'started')
+            ->first();
+
+        if (!$ride) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ride not found or already completed.',
+            ], 404);
+        }
+
+        // Switch condition for ride types
+        switch ($ride->type) {
+            case 'daily':
+                // Handle RideDaily start
+                $rideDaily = RideDaily::create([
+                    'ride_id' => $ride->id,
+                    'start_time' => now(),
+                    'complete_time' => now(),
+                ]);
+
+                break;
+
+            case 'shared':
+                // Handle RideShared start (not implemented yet)
+                // $rideShared = RideShared::create([...]);
+                break;
+
+            case 'night':
+                // Handle RideNight start (not implemented yet)
+                // $rideNight = RideNight::create([...]);
+                break;
+
+            default:
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid ride type.',
+                ], 400);
+        }
+
+        $ride->update([
+            'status' => 'completed',
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ride completed successfully',
+        ], 200);
+    }
+    // cancel ride before started from driver side
+
+    public function cancelRide(Request $request)
+    {
+        $request->validate([
+            'ride_id' => 'required|exists:rides,id',
+        ]);
+
+        $driver_id = Auth::user()->id;
+        $driver = Driver::where('user_id', $driver_id)->first();
+
+        $ride = Ride::where('id', $request->ride_id)
+            ->where('driver_id', $driver->id)
+            ->where('status', 'accepted')
+            ->first();
+
+        if (!$ride) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ride not found or already cancelled.',
+            ], 404);
+        }
+
+        $ride->update([
+            'status' => 'cancelled',
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ride cancelled successfully',
+        ], 200);
+    }
+
+    public function cancelRidePassenger(Request $request)
+    {
+        $request->validate([
+            'ride_id' => 'required|exists:rides,id',
+        ]);
+
+        $user_id = Auth::user()->id;
+
+        $passenger = Passenger::where('user_id', $user_id)->first();
+
+        if (!$passenger) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Passenger not found.',
+            ], 404);
+        }
+
+        $ride = Ride::where('id', $request->ride_id)
+            ->where('passenger_id', $passenger->id)
+            ->where('status', 'accepted')
+            ->first();
+
+        if (!$ride) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ride not found or already cancelled.',
+            ], 404);
+        }
+
+        $ride->update([
+            'status' => 'cancelled',
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ride cancelled successfully',
+        ], 200);
+    }
+
+    public function postReview(Request $request)
+    {
+        $request->validate([
+            'ride_id' => 'required|exists:rides,id',
+            'rating' => 'required|numeric',
+            'review' => 'required|string',
+            'driver_id' => 'required|exists:drivers,id',
+        ]);
+
+        $user = Auth::user();
+
+        $passenger = Passenger::where('user_id', $user->id)->first();
+
+        if (!$passenger) {
+            return response([
+                'status' => false,
+                'message' => 'Passenger not found.',
+            ], 404);
+        }
+
+        $ride = Ride::where('id', $request->ride_id)
+            ->where('passenger_id', $passenger->id)
+            ->where('status', 'completed')
+            ->first();
+
+        if (!$ride) {
+            return response([
+                'status' => false,
+                'message' => 'Ride not found or already completed.',
+            ], 404);
+        }
+
+        $review = Review::create([
+            'ride_id' => $ride->id,
+            'driver_id' => $request->driver_id,
+            'passenger_id' => $passenger->id,
+            'rating' => $request->rating,
+            'review' => $request->review,
+        ]);
+
+        return response([
+            'status' => true,
+            'message' => 'Review posted successfully.',
+        ], 200);
     }
 }

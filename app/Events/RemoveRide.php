@@ -31,7 +31,7 @@ class RemoveRide implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('ride-channe'),
+            new Channel('ride-channel'),
         ];
     }
 }
