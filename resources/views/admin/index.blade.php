@@ -133,4 +133,11 @@
             {{-- End Recent --}}
         </div>
     </div>
+
+    <script type="module">
+        Echo.channel('chat-room')
+            .listen('MessageSent', (e) => {
+                console.log(e)
+            })
+    </script>
 @endsection

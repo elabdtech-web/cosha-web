@@ -29,6 +29,9 @@
     {{-- Include custom styles --}}
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
+    {{-- vite resource --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body class="admin-body">

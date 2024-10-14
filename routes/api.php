@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\Passenger\FriendController;
 use App\Http\Controllers\Api\Passenger\NotificationController;
 use App\Http\Controllers\Api\Passenger\PassengerController;
+use App\Http\Controllers\Api\Passenger\RideChatController;
 use App\Http\Controllers\Api\PassengerAddressController;
 use App\Http\Controllers\Api\PassportAuthController;
 use App\Http\Controllers\Api\RideController;
@@ -78,6 +79,11 @@ Route::group(['prefix' => 'passenger'], function () {
         Route::post('/ride/cancel', [RideController::class, 'cancelRidePassenger']);
 
         Route::post('review/driver', [RideController::class, 'postReview']);
+
+        // chat room
+
+        Route::post('/send-message', [RideChatController::class, 'sendMessage']);
+        Route::get('/get-chats/{id}', [RideChatController::class, 'getChats']);
 
     });
     // End of Authenticated Routes of Passenger
