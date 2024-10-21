@@ -11,23 +11,34 @@
              </tr>
          </thead>
          <tbody>
-             <tr>
-                 <td>Solo, One-time</td>
-                 <td>Canceled</td>
-                 <td>$0.00</td>
-                 <td>John Doe</td>
-                 <td>
-                     <a href="#" class="btn btn-primary-outline btn-sm" data-bs-toggle="modal"
-                         data-bs-target="#cancelModal">
-                         View
-                     </a>
-                 </td>
-             </tr>
-
+             @forelse ($cancelRides as $ride)
+                 <tr>
+                     <td>{{ $ride->type }}</td>
+                     <td>
+                         <span class="badge {{ $ride->getStatusBadge() }}">
+                             {{ ucfirst($ride->status) }}
+                         </span>
+                     </td>
+                     <td>
+                         ${{ $ride->ride_price }}
+                     </td>
+                     <td>
+                         {{ $ride->driver->name }}
+                     </td>
+                     <td>
+                         <a href="{{ route('admin.rides.show', $ride->id) }}" class="btn btn-primary-outline btn-sm">
+                             View
+                         </a>
+                     </td>
+                 </tr>
+             @empty
+                 <tr>
+                     <td colspan="6" class="text-center">No Cancel Ride</td>
+                 </tr>
+             @endforelse
          </tbody>
      </table>
  </div>
-
 
  <div class="modal fade" id="cancelModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
      aria-hidden="true">

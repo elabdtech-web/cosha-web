@@ -23,6 +23,7 @@ class DriverVehicle extends Model
         'registration_no',
         'vehicle_image',
         'vehicle_document',
+        'capacity',
         'is_approved',
     ];
 

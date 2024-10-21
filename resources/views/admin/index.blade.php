@@ -135,8 +135,8 @@
     </div>
 
     <script type="module">
-        Echo.channel('chat-room')
-            .listen('MessageSent', (e) => {
+        Echo.channel('Accept-Ride')
+            .listen('AcceptRide', (e) => {
                 console.log(e)
             })
     </script>

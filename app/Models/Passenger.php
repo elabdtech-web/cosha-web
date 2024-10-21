@@ -47,4 +47,16 @@ class Passenger extends Model
     {
         return $this->belongsToMany(Driver::class, 'favorites');
     }
+
+    public function rides()
+    {
+        return $this->hasMany(Ride::class);
+    }
+
+    // Other attributes and relationships
+
+    public function sharedRides()
+    {
+        return $this->hasMany(SharedRide::class);
+    }
 }

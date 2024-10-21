@@ -16,8 +16,6 @@ use Illuminate\Support\Str;
 
 class PassportAuthController extends Controller
 {
-
-
     /**
      * Passenger registration
      */
@@ -41,12 +39,30 @@ class PassportAuthController extends Controller
             ], 422);
         }
 
-        // Check if user already exists
-        if (User::where('email', $request->email)->exists()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User already exists.',
-            ], 409);
+        // Check if the email exists in the users table
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // Create a new user if the email does not exist
+
+            $user = User::create([
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            // Assign the passenger role to the user
+            $role = Role::where('name', 'passenger')->first();
+            $user->roles()->attach($role);
+            $user->save();
+        } else {
+            // If the user already exists, check if they have a passenger account
+            if (Passenger::where('user_id', $user->id)->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User already exists as a passenger.',
+                ], 409);
+            }
         }
 
         // Get passenger role from roles table
@@ -57,18 +73,6 @@ class PassportAuthController extends Controller
                 'message' => 'Something went wrong.',
             ], 500);
         }
-
-
-        $user = User::create([
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $user->roles()->attach($role); // For multiple roles
-        $user->save();
-
-        $tokenResult = $user->createToken('CoshaByElabdTechJWTAuthenticationToken');
-        $accessToken = $tokenResult->accessToken;
 
         // Upload profile_image if exist
         if ($request->hasFile('profile_image')) {
@@ -88,6 +92,10 @@ class PassportAuthController extends Controller
             'nic_no' => $request->nic_no,
             'profile_image' => $profile_image_name ?? null,
         ]);
+
+
+        $tokenResult = $user->createToken('CoshaByElabdTechJWTAuthenticationToken');
+        $accessToken = $tokenResult->accessToken;
 
         if (!$passenger) {
             // Delete user
@@ -131,12 +139,11 @@ class PassportAuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (!$user || !Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             return response()->json([
                 'status' => false,
-                'message' => 'User not found.',
-                'error' => 'Not Found',
-            ], 404);
+                'message' => 'Invalid credentials.',
+            ], 401);
         }
 
         // Find the associated passenger record
@@ -151,39 +158,19 @@ class PassportAuthController extends Controller
             ], 404);
         }
         // Check if user exists
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::user();
+        $tokenResult = $user->createToken('CoshaByElabdTechJWTAuthenticationToken');
+        $accessToken = $tokenResult->accessToken;
 
-            $user = $request->user();
-
-            $tokenResult = $user->createToken('CoshaByElabdTechJWTAuthenticationToken');
-
-            $accessToken = $tokenResult->accessToken;
-
-
-            return response()->json([
-                'status' => true,
-                'statusCode' => 200,
-                'message' => 'Passenger has been logged successfully.',
-                'accessToken' => $accessToken,
-                'data' => [
-                    'user_id' => $user->id,
-                ],
-            ], 200);
-
-            // return $this->respondWithToken($token);
-        } else {
-            return response()->json([
-                'status' => false,
-                'statusCode' => 401,
-                'message' => 'Invalid credentials.',
-                'errors' => 'Invalid credentials.',
-            ], 401);
-        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Logged in successfully as Passenger.',
+            'accessToken' => $accessToken,
+            'data' => [
+                'user_id' => $user->id,
+                'passenger_id' => $passenger->id
+            ],
+        ], 200);
     }
-
-
-    // Driver Auth APIs
 
     // Register Driver
     public function registerDriver(Request $request): JsonResponse

@@ -40,14 +40,13 @@
                            <p>Ride Type:</p>
                            <p>Status:</p>
                            <p>Total Fare:</p>
-                           <p>Fare / head:</p>
                            <p>Payment:</p>
                        </div>
                        <div class="col-6 text-end">
-                           <p>Daily ride</p>
-                           <p><span class="text-success">Ongoing</span></p>
-                           <p>$20.00</p>
-                           <p>$5.00</p>
+                           <p>{{ $ride->type ?? 'Not set' }}</p>
+                           <p><span class="badge {{ $ride->getStatusBadge() }}">
+                                   {{ ucfirst($ride->status) }}</span></p>
+                           <p>${{ $ride->ride_price ?? 'Not set' }}</p>
                            <p>Mastercard</p>
                        </div>
                    </div>
@@ -55,10 +54,9 @@
                <div class="col-md-6">
                    <h6>Driver</h6>
                    <div class="d-flex align-items-center gap-4 mt-3">
-                       <img src="{{ asset('images/sample/profile.png') }}" alt="Driver"
-                           class="driver-profile-img rounded-circle">
-                       <p class="mb-0">Harry Potters</p>
-                       <button class="btn btn-primary-outline btn-sm">View Profile</button>
+                       <img src="{{ $driver->profile_image ? Storage::url('images/drivers/' . $driver->profile_image) : asset('images/default.png') }}"
+                           alt="Driver" class="driver-profile-img rounded-circle">
+                       <p class="mb-0">{{ $driver->name }}</p>
                    </div>
                </div>
            </div>

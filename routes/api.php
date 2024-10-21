@@ -85,6 +85,14 @@ Route::group(['prefix' => 'passenger'], function () {
         Route::post('/send-message', [RideChatController::class, 'sendMessage']);
         Route::get('/get-chats/{id}', [RideChatController::class, 'getChats']);
 
+        // join ride
+
+        Route::post('/join-ride', [RideController::class, 'joinRide']);
+
+        // shared ride list
+
+        Route::post('rides/shared-list', [RideController::class, 'sharedRideList']);
+
     });
     // End of Authenticated Routes of Passenger
 
@@ -134,13 +142,16 @@ Route::group(['prefix' => 'driver'], function () {
         Route::put('/notifications/update', [\App\Http\Controllers\Api\Driver\NotificationController::class, 'updateNotifications']);
 
         Route::post('/send/offer', [RideController::class, 'sendOffer']);
-        Route::get('/rides/list', [RideController::class, 'listRides']);
+        Route::post('/rides/list', [RideController::class, 'listRides']);
         // start ride
         Route::post('/start/ride', [RideController::class, 'startRide']);
         // complete ride route
         Route::post('/complete/ride', [RideController::class, 'completeRide']);
 
         Route::post('/ride/cancel', [RideController::class, 'cancelRide']);
+
+        Route::post('/accept/offer', [RideController::class, 'acceptRideOffer']);
+
     });
     // End of Authenticated Routes of Driver
 

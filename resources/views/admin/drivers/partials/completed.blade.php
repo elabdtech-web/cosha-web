@@ -4,25 +4,42 @@
         <thead>
             <tr>
                 <th>Ride Type</th>
+                <th>Passengers</th>
+                <th>Date</th>
+                <th>Ride Fare</th>
                 <th>Status</th>
-                <th>Total Fare</th>
-                <th>Driver</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Solo, One-time</td>
-                <td>Completed</td>
-                <td>$15.00</td>
-                <td>John Doe</td>
-                <td><!-- Button trigger modal -->
-                    <a href="#" class="btn btn-primary-outline btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#staticBackdrop">
-                        View
-                    </a>
-                </td>
-            </tr>
+            @forelse ($completedRide as $item)
+                <tr>
+                    <td>{{ $item->type }}</td>
+                    <td>{{ $item->passenger->count() }}</td>
+
+                    <td>
+                        {{ $item->created_at->format('d-m-Y') }}
+                    </td>
+                    <td>
+                        {{ $item->ride_price }} $
+                    </td>
+                    <td>
+                        <span class="badge {{ $item->getStatusBadge() }}">
+                            {{ ucfirst($item->status) }}
+                        </span>
+                    </td>
+                    <td><!-- Button trigger modal -->
+                        <a href="{{ route('admin.rides.show', $item->id) }}" class="btn btn-primary-outline btn-sm">
+                            View
+                        </a>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center">No Completed Rides</td>
+                </tr>
+            @endforelse
+
         </tbody>
     </table>
 </div>

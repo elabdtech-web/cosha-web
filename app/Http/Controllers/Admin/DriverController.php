@@ -7,8 +7,10 @@ use App\Models\Driver;
 use App\Models\DriverIdentityDocument;
 use App\Models\DriverLicense;
 use App\Models\DriverVehicle;
+use App\Models\Ride;
 use App\Models\Role;
 use App\Models\User;
+use App\RideStatus;
 use Flasher\Toastr\Laravel\Facade\Toastr;
 use Hash;
 use Illuminate\Http\Request;
@@ -333,7 +335,14 @@ class DriverController extends Controller
     public function show(Driver $driver)
     {
         $driver = Driver::with('user', 'vehicles', 'identity_document', 'license')->find($driver->id);
-        return view('admin.drivers.view', compact('driver'));
+        $ride = Ride::where('driver_id', $driver->id)->first();
+        // completed ride
+        $completedRide = Ride::where('driver_id', $driver->id)
+            ->where('status', RideStatus::COMPLETED->value)->get();
+        // cancelled ride
+        $cancelledRide = Ride::where('driver_id', $driver->id)
+            ->where('status', RideStatus::CANCELLED->value)->get();
+        return view('admin.drivers.view', compact('driver', 'ride', 'completedRide', 'cancelledRide'));
     }
 
     public function destroy(Driver $driver)

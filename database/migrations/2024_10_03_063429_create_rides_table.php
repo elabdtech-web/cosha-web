@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
             $table->string('uuid');
-            $table->enum('type', ['daily', 'shared', 'night']);
+            $table->string('type')->default('not_shared'); // default value can be 'not_shared'
             $table->string('pickup_location');
             $table->string('pickup_latitude');
             $table->string('pickup_longitude');
@@ -21,7 +21,6 @@ return new class extends Migration {
             $table->string('dropoff_latitude');
             $table->string('dropoff_longitude');
             $table->unsignedBigInteger('passenger_id');
-            $table->decimal('estimated_price', 8, 2);
             $table->decimal('ride_price', 8, 2)->nullable();
             $table->string('status')->default('pending');
             $table->integer('no_passengers');
@@ -35,7 +34,6 @@ return new class extends Migration {
             $table->string('vehicle_document')->nullable();
             $table->string('distance');
             $table->timestamps();
-            // Foreign key constraints
             $table->foreign('passenger_id')->references('id')->on('passengers')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
         });

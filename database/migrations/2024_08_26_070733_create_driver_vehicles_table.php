@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('model');
             $table->string('type');
             $table->string('registration_no');
+            $table->string('capacity');
             $table->text('vehicle_image')->nullable();
             $table->text('vehicle_document')->nullable();
             $table->boolean('is_approved')->default(false);

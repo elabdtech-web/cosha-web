@@ -40,27 +40,36 @@
                            <p>Ride Type:</p>
                            <p>Status:</p>
                            <p>Total Fare:</p>
-                           <p>Fare / head:</p>
                            <p>Payment:</p>
                        </div>
                        <div class="col-6 text-end">
-                           <p>Daily ride</p>
-                           <p><span class="text-success">Ongoing</span></p>
-                           <p>$20.00</p>
-                           <p>$5.00</p>
+                           <p>{{ $passenger->rides->first()->type ?? 'Not set' }}</p>
+                           <p><span
+                                   class="badge {{ $passenger->rides->first()->getStatusBadge() ?? 'badge-secondary' }}">{{ ucfirst($passenger->rides->first()->status) }}</span>
+                           </p>
+                           <p>${{ $passenger->rides->first()->ride_price }}</p>
                            <p>Mastercard</p>
                        </div>
                    </div>
                </div>
-               <div class="col-md-6">
-                   <h6>Driver</h6>
-                   <div class="d-flex align-items-center gap-4 mt-3">
-                       <img src="{{ asset('images/sample/profile.png') }}" alt="Driver"
-                           class="driver-profile-img rounded-circle">
-                       <p class="mb-0">Harry Potters</p>
-                       <button class="btn btn-primary-outline btn-sm">View Profile</button>
+               @if ($passenger->rides->first()->driver_id != null)
+                   <div class="col-md-6">
+                       <h6>Driver</h6>
+                       <div class="d-flex align-items-center gap-4 mt-3">
+                           <img src="{{ $passenger->rides->first()->driver->profile_image ? Storage::url('images/drivers/' . $passenger->rides->first()->driver->profile_image) : $passenger->rides->first()->driver->profile_image }}"
+                               alt="Driver" class="driver-profile-img rounded-circle">
+                           <p class="mb-0">{{ $passenger->rides->first()->driver->name }}</p>
+                           <button class="btn btn-primary-outline btn-sm">View Profile</button>
+                       </div>
                    </div>
-               </div>
+               @else
+                   <div class="col-md-6">
+                       <h6>Driver</h6>
+                       <div class="d-flex align-items-center gap-4 mt-3">
+                           <span>Not set</span>
+                       </div>
+                   </div>
+               @endif
            </div>
        </div>
    </div>

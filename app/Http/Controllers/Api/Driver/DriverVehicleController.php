@@ -74,6 +74,7 @@ class DriverVehicleController extends Controller
             'registration_no' => 'required',
             'vehicle_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
             'vehicle_document' => 'nullable|mimes:pdf|max:10240',
+            'capacity' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -103,6 +104,7 @@ class DriverVehicleController extends Controller
         $driverVechicle->vehicle_name = $request->vehicle_name;
         $driverVechicle->make = $request->make;
         $driverVechicle->model = $request->model;
+        $driverVechicle->capacity = $request->capacity;
         $driverVechicle->type = $request->type;
         $driverVechicle->registration_no = $request->registration_no;
 

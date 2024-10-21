@@ -10,13 +10,14 @@
                     <h4 class="mb-0">Rides</h4>
                 </div>
             </div>
-            {{-- End Heading --}}
-
             {{-- Table --}}
             <div class="row mt-4">
                 <div class="col-md-12">
                     <div class="table-responsive">
                         @include('admin.rides.table')
+                    </div>
+                    <div class="mt-4 d-flex justify-content-center">
+                        {{ $rides->links() }}
                     </div>
                 </div>
             </div>

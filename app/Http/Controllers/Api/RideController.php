@@ -2,36 +2,33 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\CreateRide;
-use App\Events\DriverOffer;
-use App\Events\Offer;
-use App\Events\OfferAccepted;
-use App\Events\OfferData;
+use App\Events\AcceptRide;
 use App\Events\PostRide;
-use App\Events\RemoveRide;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\RideOfferResource;
 use App\Http\Resources\RideResource;
 use App\Models\Driver;
 use App\Models\Passenger;
 use App\Models\Review;
 use App\Models\Ride;
 use App\Models\RideDaily;
-use App\Models\RideOffer;
+use App\Models\SharedRide;
+use App\RideStatus;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class RideController extends Controller
 {
+    public const PER_KM_PRICE = 15;
+    public const STARTER_DISCOUNT_PERCENT = 25;
+    public const DISCOUNT_INCREMENT_PER_RIDER = 5;
+    public const START_KM = 1;
+    public const IS_PASSENGER = 1;
+    public const RADIUS = 10;
+
     protected function broadcastOfferAccepted(Ride $ride)
     {
-        OfferAccepted::dispatch($ride); // Dispatch the event
-    }
-
-    protected function broadcastRideRemoved(Ride $ride)
-    {
-        RemoveRide::dispatch($ride);
+        AcceptRide::dispatch($ride); // Dispatch the event
     }
 
     public function createRide(Request $request)
@@ -40,14 +37,14 @@ class RideController extends Controller
         try {
             // Validate incoming request
             $request->validate([
-                'type' => 'required|in:daily,shared,night',
+                'type' => 'required',
                 'pickup_location' => 'required|string',
                 'pickup_latitude' => 'required',
                 'pickup_longitude' => 'required',
                 'dropoff_location' => 'required|string',
                 'dropoff_latitude' => 'required',
                 'dropoff_longitude' => 'required',
-                'estimated_price' => 'required|numeric',
+                'ride_price' => 'required|numeric',
                 'no_passengers' => 'required|integer',
                 'distance' => 'required|numeric',
             ]);
@@ -74,7 +71,7 @@ class RideController extends Controller
                 'dropoff_latitude' => $request->dropoff_latitude,
                 'dropoff_longitude' => $request->dropoff_longitude,
                 'passenger_id' => $passenger->id,
-                'estimated_price' => $request->estimated_price,
+                'ride_price' => $request->ride_price,
                 'no_passengers' => $request->no_passengers,
                 'distance' => $request->distance,
             ]);
@@ -91,17 +88,40 @@ class RideController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Something went wrong while creating a ride',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
     }
 
-    public function listRides()
+    public function listRides(Request $request)
     {
-        $rides = Ride::where('status', 'pending')
+        $request->validate([
+            'latitude' => 'required',
+            'longitude' => 'required',
+        ]);
+
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+        $radius = self::RADIUS;
+
+        // Use Haversine formula to calculate distance and filter rides within 10 KM
+        $rides = Ride::where('status', RideStatus::PENDING->value)
             ->with('passenger', 'driver')
+            ->whereRaw("
+            (6371 * acos(
+                cos(radians(?)) * cos(radians(pickup_latitude)) * cos(radians(pickup_longitude) - radians(?))
+                + sin(radians(?)) * sin(radians(pickup_latitude))
+            )) < ?
+        ", [$latitude, $longitude, $latitude, $radius])
             ->get();
+
+        if (!$rides) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Rides not found',
+            ], 404);
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Rides retrieved successfully',
@@ -109,14 +129,29 @@ class RideController extends Controller
         ]);
     }
 
-    public function sendOffer(Request $request)
+    public function acceptRideOffer(Request $request)
     {
         $request->validate([
             'ride_id' => 'required|exists:rides,id',
-            'distance' => 'required',
-            'time' => 'required|string',
-            'offered_price' => 'required|numeric',
         ]);
+
+        // find ride id from Ride  model
+        $ride = Ride::find($request->ride_id);
+
+        if ($ride->status != RideStatus::PENDING->value) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ride is not pending',
+            ]);
+        }
+
+
+        if (!$ride) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ride not found',
+            ], 404);
+        }
 
         $driver = Driver::with('vehicles')
             ->where('user_id', Auth::user()->id)
@@ -128,169 +163,34 @@ class RideController extends Controller
                 'message' => 'You cannot send an offer without submitting your vehicle.',
             ], 400); // Return a 400 Bad Request status
         }
-        $offer = RideOffer::create([
-            'ride_id' => $request->ride_id,
-            'time' => $request->time,
-            'distance' => $request->distance,
-            'driver_id' => $driver->id,
-            'offered_price' => $request->offered_price,
-            'status' => 'offered',
-        ]);
 
-        $ride = Ride::find($request->ride_id);
-        // Combine ride and offer data into one array
-        $offerData = [
-            'id' => $offer->id,
-            'driver_id' => $driver->id,
-            'name' => $driver->name,
-            'vehicle_name' => $driver->vehicles->vehicle_name ?? null,
-            'distance' => $request->distance,
-            'time' => $request->time,
-            'offered_price' => $request->offered_price,
-            'pickup_location' => $ride->pickup_location,
-            'dropoff_location' => $ride->dropoff_location,
-            'no_passengers' => $ride->no_passengers,
-            'ride_uuid' => $ride->uuid,
-            'vehicle_image' => Storage::url('drivers/' . $driver->vehicles->vehicle_image) ?? Storage::url('default.png'),
-            'profile' => Storage::url('profile_images/' . $driver->profile_image) ?? Storage::url('default.png')
-        ];
-        // Dispatch the offer event with the offer and ride data
-        OfferData::dispatch($offerData);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Offer sent successfully',
-            'data' => $offerData,
-        ]);
-    }
-
-    public function acceptRideOffer(Request $request)
-    {
-        $request->validate([
-            'ride_offer_id' => 'required|exists:ride_offers,id',
-        ]);
-
-        // find the ride offer
-        $rideOffer = RideOffer::where('id', $request->ride_offer_id)
-            ->where('status', 'offered')
-            ->first();
-
-        if (!$rideOffer) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Ride offer not found or already withdrawn.',
-            ], 404);
-        }
-
-        // get the ride related to this offer
-
-        $ride = Ride::find($rideOffer->ride_id);
-
-        if (!$ride) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Ride not found.',
-            ], 404);
-        }
-
-        // Check if the authenticated user is the creator of the ride
-        if ($ride->user_id == auth()->id()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'You cannot accept your own ride offer.',
-            ], 403);  // 403 Forbidden status code
-        }
-
-
-        // Get the driver's vehicle details (assuming driver's vehicle details are stored somewhere)
-
-        $driver = Driver::with('vehicles')->find($rideOffer->driver_id);
-
-        if (!$driver) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Driver not found.',
-            ], 404);
-        }
 
         $ride->update([
-            'status' => 'accepted',
-            'driver_id' => $rideOffer->driver_id,
+            'distance' => $ride->distance,
+            'driver_id' => $driver->id,
+            'ride_price' => $ride->ride_price,
             'vehicle_name' => $driver->vehicles->vehicle_name, // Example: vehicle_name
             'make' => $driver->vehicles->make,         // Example: make
             'model' => $driver->vehicles->model,       // Example: model
             'registration_no' => $driver->vehicles->registration_no, // Example: registration_no
             'vehicle_type' => $driver->vehicles->type, // Example: vehicle_type
+            'status' => RideStatus::ACCEPTED->value,
         ]);
 
-        // Change the ride offer status to accepted
-        $rideOffer->update([
-            'status' => 'accepted',
-        ]);
-
-        // Change the status of all other ride offers to rejected
-        RideOffer::where('ride_id', $rideOffer->ride_id)
-            ->where('id', '!=', $rideOffer->id)
-            ->where('status', 'offered')
-            ->update(['status' => 'rejected']);
-
-        // Broadcast event to remove or unsubscribe from the offer channel
-        $this->broadcastOfferAccepted($ride);
-
-        // remove ride from rides Channel
-
-        $this->broadcastRideRemoved($ride);
+        // Dispatch the offer event with the offer and ride data
+        AcceptRide::dispatch($ride->toArray());
 
         return response()->json([
             'status' => true,
-            'message' => 'Ride offer accepted successfully',
-            'ride' => $ride,
-            'offer' => $rideOffer,
+            'message' => 'Offer sent successfully',
+            'data' => $ride,
         ]);
     }
-
-    public function listOffers()
-    {
-        $offers = RideOffer::with('ride')->where('status', 'offered')
-            ->get();
-        return response()->json([
-            'status' => true,
-            'message' => 'Offers retrieved successfully',
-            'data' => RideOfferResource::collection($offers)
-        ]);
-    }
-
-    public function offerDetails(Request $request)
-    {
-        $request->validate([
-            'ride_offer_id' => 'required|exists:ride_offers,id',
-        ]);
-
-        $offer = RideOffer::where('id', $request->ride_offer_id)
-            ->where('status', 'accepted')
-            ->first();
-
-        if (!$offer) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Ride offer not found or already withdrawn.',
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Offer details retrieved successfully',
-            'data' => new RideOfferResource($offer)
-        ]);
-    }
-
 
     public function startRide(Request $request)
     {
         $request->validate([
             'ride_id' => 'required|exists:rides,id',
-            'longitude' => 'required',
-            'latitude' => 'required',
         ]);
 
         $driver_id = Auth::user()->id;
@@ -298,7 +198,7 @@ class RideController extends Controller
 
         $ride = Ride::where('id', $request->ride_id)
             ->where('driver_id', $driver->id)
-            ->where('status', 'accepted')
+            ->where('status', RideStatus::ACCEPTED->value)
             ->first();
 
         if (!$ride) {
@@ -310,24 +210,26 @@ class RideController extends Controller
 
         // Switch condition for ride types
         switch ($ride->type) {
-            case 'daily':
-                // Handle RideDaily start
-                $rideDaily = RideDaily::create([
-                    'ride_id' => $ride->id,
-                    'start_time' => now(),
-                    'complete_time' => now(),
+            case 'not_shared':
+                $ride->update([
+                    'status' => RideStatus::STARTED->value,
                 ]);
-
                 break;
 
             case 'shared':
-                // Handle RideShared start (not implemented yet)
-                // $rideShared = RideShared::create([...]);
-                break;
-
-            case 'night':
-                // Handle RideNight start (not implemented yet)
-                // $rideNight = RideNight::create([...]);
+                // Handle RideShared start
+                $rideShared = SharedRide::create([
+                    'ride_id' => $ride->id,
+                    'passenger_id' => $ride->passenger_id,
+                    'join_km' => self::START_KM,
+                    'leave_km' => $ride->distance,
+                    'cost' => $ride->ride_price,
+                    'is_main_passenger' => self::IS_PASSENGER,
+                    'pickup_latitude' => $ride->pickup_latitude,
+                    'pickup_longitude' => $ride->pickup_longitude,
+                    'dropoff_latitude' => $ride->dropoff_latitude,
+                    'dropoff_longitude' => $ride->dropoff_longitude,
+                ]);
                 break;
 
             default:
@@ -337,17 +239,192 @@ class RideController extends Controller
                 ], 400);
         }
 
-
-        $ride->update([
-            'status' => 'started',
-        ]);
-
         return response()->json([
             'status' => true,
             'message' => 'Ride started successfully',
         ], 200);
     }
 
+    public function joinRide(Request $request)
+    {
+        $request->validate([
+            'ride_id' => "required|exists:rides,id",
+            'passenger_id' => 'required|exists:passengers,id',
+            "join_km" => "required",
+            "leave_km" => "required",
+        ]);
+
+        $ride = Ride::find($request->ride_id);
+
+        if ($ride->type != 'shared') {
+            return response()->json([
+                'status' => false,
+                'message' => 'This is not a shared ride.'
+            ], 400);
+        }
+
+        // Add passenger to the shared ride
+        $passengerRide = SharedRide::create([
+            'ride_id' => $ride->id,
+            'passenger_id' => $request->passenger_id,
+            'join_km' => $request->join_km,
+            'leave_km' => $request->leave_km,
+            'pickup_latitude' => $request->pickup_latitude,
+            'pickup_longitude' => $request->pickup_longitude,
+            'dropoff_latitude' => $request->dropoff_latitude,
+            'dropoff_longitude' => $request->dropoff_longitude
+        ]);
+
+        // Calculate ride price dynamically based on Cosha concept
+        $this->ridePrices($ride);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Passenger joined successfully.',
+            'data' => $passengerRide
+        ], 200);
+    }
+
+    public function leaveRide(Request $request)
+    {
+        $request->validate([
+            'ride_id' => 'required|exists:rides,id',
+            'passenger_id' => 'required|exists:passengers,id',
+        ]);
+
+        $ride = Ride::find($request->ride_id);
+
+        if ($ride->type != 'shared') {
+            return response()->json([
+                'status' => false,
+                'message' => 'This is not a shared ride.'
+            ], 400);
+        }
+
+        // Remove passenger from shared ride
+        $passengerRide = SharedRide::where('ride_id', $request->ride_id)
+            ->where('passenger_id', $request->passenger_id)
+            ->first();
+
+        if (!$passengerRide) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Passenger not found in this ride.'
+            ], 404);
+        }
+
+        $passengerRide->delete();
+
+        // Recalculate ride price after passenger leaves
+        $this->calculateRideCost($ride->id);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Passenger left successfully.'
+        ], 200);
+    }
+
+    public function ridePrices(Ride $ride): void
+    {
+        $riders = $ride->sharedRides;
+
+        if ($riders->count() < 2) {
+            [
+                [
+                    'passenger_id' => $ride->sharedRides->first()->passenger_id,
+                    'total' => $ride->sharedRides->first()->leave_km * self::PER_KM_PRICE
+                ]
+            ];
+        }
+
+        $mainPassengerRide = $ride->sharedRides
+            ->where('is_main_passenger', true)
+            ->first();
+
+        $passengerMetrics = $ride->sharedRides
+            ->select('join_km', 'leave_km')
+            ->toArray();
+        // dd($mainPassengerRide);
+        $perKmPrices = collect([]);
+
+        for ($i = $mainPassengerRide->join_km; $i <= $mainPassengerRide->leave_km; $i++) {
+            $perKmPrices->push([
+                'km_no' => $i,
+                'discount' => self::findDiscount($passengerMetrics, km_no: $i)
+            ]);
+        }
+
+        //calculate cost for all passenger
+        foreach ($ride->sharedRides as $sharedRide) {
+            $cost = 0;
+
+            for ($i = $sharedRide->join_km; $i <= $sharedRide->leave_km; $i++) {
+                $discount = self::PER_KM_PRICE * $perKmPrices->where('km_no', $i)->first()['discount'] / 100;
+
+                $cost += self::PER_KM_PRICE - $discount;
+            }
+
+            $sharedRide->cost = $cost;
+            $sharedRide->save();
+        }
+    }
+    /**
+     * Summary of findDiscount
+     */
+    private static function findDiscount(array $metrics, int $km_no): int
+    {
+        $rep = 0;
+
+        foreach ($metrics as $kmRange) {
+            //check if between
+            if ($km_no >= $kmRange['join_km'] && $km_no <= $kmRange['leave_km']) {
+                $rep++;
+            }
+        }
+
+        if ($rep <= 1) {
+            return 0; //discount will be 0 for no share
+        }
+
+        return ($rep - 2) * self::DISCOUNT_INCREMENT_PER_RIDER + self::STARTER_DISCOUNT_PERCENT; // x
+        // return (2 - 2) * 5 + 25; // 25
+        // return (3 - 2) * 5 + 25; // 30
+        // return (4 - 2) * 5 + 25; // 40
+        // return (5 - 2) * 5 + 25; // 45
+    }
+
+    public function calculateRideCost($ride_id)
+    {
+        $ride = Ride::find($ride_id);
+        $passengerRides = SharedRide::where('ride_id', $ride_id)->get();
+
+        $totalDistance = $ride->distance; // Assuming this is stored in the ride table
+        $pricePerKm = 15; // Example price
+
+        $totalCost = [];
+        $passengerCount = $passengerRides->count();
+
+        foreach ($passengerRides as $passengerRide) {
+            $passengerDistance = $passengerRide->leave_km - $passengerRide->join_km;
+
+            // Apply dynamic pricing based on the number of passengers
+            if ($passengerCount == 2) {
+                $pricePerKm *= 0.75; // 25% discount
+            } elseif ($passengerCount >= 3) {
+                $pricePerKm *= 0.70; // 30% discount
+            }
+
+            $cost = $passengerDistance * $pricePerKm;
+            $totalCost[$passengerRide->passenger_id] = $cost;
+        }
+
+        // Save the calculated costs in SharedRide model or somewhere else
+        foreach ($totalCost as $passenger_id => $cost) {
+            SharedRide::where('ride_id', $ride_id)
+                ->where('passenger_id', $passenger_id)
+                ->update(['cost' => $cost]);
+        }
+    }
     // complete ride from driver side
 
     public function completeRide(Request $request)
@@ -363,7 +440,7 @@ class RideController extends Controller
 
         $ride = Ride::where('id', $request->ride_id)
             ->where('driver_id', $driver->id)
-            ->where('status', 'started')
+            ->where('status', RideStatus::STARTED->value)
             ->first();
 
         if (!$ride) {
@@ -403,7 +480,7 @@ class RideController extends Controller
         }
 
         $ride->update([
-            'status' => 'completed',
+            'status' => RideStatus::COMPLETED->value,
         ]);
 
         return response()->json([
@@ -424,7 +501,7 @@ class RideController extends Controller
 
         $ride = Ride::where('id', $request->ride_id)
             ->where('driver_id', $driver->id)
-            ->where('status', 'accepted')
+            ->where('status', RideStatus::ACCEPTED->value)
             ->first();
 
         if (!$ride) {
@@ -434,6 +511,23 @@ class RideController extends Controller
             ], 404);
         }
 
+        // Check the number of cancellations in the last 30 days
+        $thiryDaysAgo = Carbon::now()->subDays(30);
+        $cancellationLimit = 5;
+
+        $cancellationsCount = Ride::where('driver_id', $driver->id)
+            ->where('status', RideStatus::CANCELLED->value)
+            ->where('updated_at', '>=', $thiryDaysAgo)
+            ->count();
+        // If cancellations exceed the limit, return an error
+        if ($cancellationsCount >= $cancellationLimit) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You have exceeded the cancellation limit.',
+            ], 400);
+        }
+
+
         $ride->update([
             'status' => 'cancelled',
         ]);
@@ -441,6 +535,7 @@ class RideController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Ride cancelled successfully',
+            'cancellation' => $cancellationsCount
         ], 200);
     }
 
@@ -463,7 +558,7 @@ class RideController extends Controller
 
         $ride = Ride::where('id', $request->ride_id)
             ->where('passenger_id', $passenger->id)
-            ->where('status', 'accepted')
+            ->where('status', RideStatus::ACCEPTED->value)
             ->first();
 
         if (!$ride) {
@@ -474,7 +569,7 @@ class RideController extends Controller
         }
 
         $ride->update([
-            'status' => 'cancelled',
+            'status' => RideStatus::CANCELLED->value,
         ]);
 
         return response()->json([
@@ -505,7 +600,7 @@ class RideController extends Controller
 
         $ride = Ride::where('id', $request->ride_id)
             ->where('passenger_id', $passenger->id)
-            ->where('status', 'completed')
+            ->where('status', RideStatus::COMPLETED->value)
             ->first();
 
         if (!$ride) {
@@ -526,6 +621,52 @@ class RideController extends Controller
         return response([
             'status' => true,
             'message' => 'Review posted successfully.',
+        ], 200);
+    }
+    // Shared Ride List
+    public function sharedRideList(Request $request)
+    {
+        $request->validate([
+            'pickup_latitude' => 'required',
+            'pickup_longitude' => 'required',
+            'dropoff_latitude' => 'required',
+            'dropoff_longitude' => 'required',
+            'no_passengers' => 'required',
+        ]);
+
+
+        $pickup_latitude = $request->pickup_latitude;
+        $pickup_longitude = $request->pickup_longitude;
+        $dropoff_latitude = $request->dropoff_latitude;
+        $dropoff_longitude = $request->dropoff_longitude;
+
+        // Query rides that match the conditions for shared rides:
+        $rides = Ride::where('status', RideStatus::STARTED->value)
+            ->where('type', 'shared')
+            ->with('sharedRides')
+            ->where(function ($query) use ($pickup_latitude, $pickup_longitude, $dropoff_latitude, $dropoff_longitude) {
+                // Pickup should be at or before the requested pickup point (latitude and longitude)
+                $query->where('pickup_latitude', '<=', $pickup_latitude)
+                    ->where('pickup_longitude', '<=', $pickup_longitude);
+
+                // Dropoff should be at or after the requested dropoff point (latitude and longitude)
+                $query->where('dropoff_latitude', '>=', $dropoff_latitude)
+                    ->where('dropoff_longitude', '>=', $dropoff_longitude);
+            })
+            ->get();
+
+        if (!$rides) {
+            return response([
+                'status' => false,
+                'message' => 'No shared rides found.',
+            ]);
+        }
+
+        // Return the response as JSON
+        return response()->json([
+            'status' => true,
+            'message' => 'Shared rides list retrieved successfully.',
+            'data' => $rides
         ], 200);
     }
 }

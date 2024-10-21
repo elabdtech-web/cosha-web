@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\RideStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,7 +21,6 @@ class Ride extends Model
         'dropoff_latitude',
         'dropoff_longitude',
         'passenger_id',
-        'estimated_price',
         'ride_price',
         'status',
         'no_passengers',
@@ -38,7 +38,7 @@ class Ride extends Model
     // Define relationships
     public function passenger()
     {
-        return $this->belongsTo(Passenger::class, 'passenger_id');
+        return $this->belongsTo(Passenger::class);
     }
 
     public function driver()
@@ -49,5 +49,26 @@ class Ride extends Model
     public function rideDaily()
     {
         return $this->hasMany(RideDaily::class);
+    }
+
+    public function sharedRides()
+    {
+        return $this->hasMany(SharedRide::class);
+    }
+
+
+    // Define status
+
+    public const STATUS_BADGES = [
+        RideStatus::ACCEPTED->value => 'bg-success',
+        RideStatus::CANCELLED->value => 'bg-danger',
+        RideStatus::STARTED->value => 'bg-info',
+        RideStatus::COMPLETED->value => 'bg-primary',
+    ];
+
+    // Method to get the badge class for the status
+    public function getStatusBadge()
+    {
+        return self::STATUS_BADGES[$this->status] ?? 'bg-secondary'; // Default to 'badge-secondary' if status not found
     }
 }

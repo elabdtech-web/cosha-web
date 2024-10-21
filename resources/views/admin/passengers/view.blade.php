@@ -16,7 +16,7 @@
                 <!-- User Info Section -->
                 <div class="col-md-4">
                     <div class="card shared-card p-4 mb-2">
-                        <img src="{{ isset($passenger->profile_image) ? Storage::url('images/passengers/' . $passenger->profile_image) : asset('images/default.png') }}"
+                        <img src="{{ isset($passenger->profile_image) ? Storage::url('profile_images/' . $passenger->profile_image) : asset('images/default.png') }}"
                             alt="User Photo" class="profile-img d-block">
                         <div class="profile-section mt-2 p-3">
                             <span class="text-muted">Name *</span>

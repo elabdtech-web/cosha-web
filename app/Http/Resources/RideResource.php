@@ -27,7 +27,7 @@ class RideResource extends JsonResource
             'passenger_id' => $this->passenger_id,
             'no_passengers' => $this->no_passengers,
             'passenger_name' => Passenger::find($this->passenger_id)->name ?? null,
-            'estimated_price' => (float) $this->estimated_price,
+            'ride_price' => (float) $this->ride_price,
             'passenger_profile' => Passenger::find($this->passenger_id)->profile_image ? Storage::url('profile_images/' . Passenger::find($this->passenger_id)->profile_image) : Storage::url('default.png'),
             'distance' => (float) $this->distance,
         ];
