@@ -38,6 +38,10 @@
              @endforelse
          </tbody>
      </table>
+
+     <div class="d-flex justify-content-center mt-3">
+         {{ $cancelRides->links() }}
+     </div>
  </div>
 
  <div class="modal fade" id="cancelModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"

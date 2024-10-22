@@ -1,0 +1,73 @@
+<h2>Regarding account creation:</h2>
+<ul>
+    <li>
+        A driver can create both a driver account and a user account with the
+        same email address.
+    </li>
+    <li>
+        The driver must provide mandatory documents before account validation,
+        including: ID, professional auto insurance, front and back of driver's
+        license, front and back of VTC card, vehicle photo, vehicle registration
+        certificate, and indicate the maximum number of passengers desired in
+        their vehicle.
+    </li>
+</ul>
+
+<h2>Ride management:</h2>
+<ul>
+    <li>
+        The driver can cancel a ride, but beyond a certain number of
+        cancellations, they may face penalties.
+    </li>
+    <li>
+        Rides are offered to drivers based on their location or if a passenger
+        has selected them as a favorite.
+    </li>
+    <li>
+        Drivers cannot see all available rides, only those assigned to them.
+    </li>
+    <li>
+        During a shared ride, the driver can pick up additional passengers going
+        in the same direction.
+    </li>
+</ul>
+
+<h2>Passenger features:</h2>
+<ul>
+    <li>
+        Passengers can view details of drivers suggested by the application or
+        their favorite drivers.
+    </li>
+    <li>
+        A "feed" function will be implemented later to share information and
+        highlight drivers.
+    </li>
+    <li>
+        Passengers will be able to select a ride only with their contacts (app
+        users).
+    </li>
+    <li>
+        If a contact is not registered, it will be possible to invite them by
+        SMS with a 10% discount on the first ride.
+    </li>
+    <li>Rides can be shared or paid for in various ways between passengers.</li>
+</ul>
+
+<h2>Savings management:</h2>
+<ul>
+    <li>
+        When a passenger saves money on a ride, the amount is added to their
+        virtual wallet.
+    </li>
+    <li>This amount can be used for a future ride or refunded.</li>
+</ul>
+
+<h2>Reservations and shared rides:</h2>
+<ul>
+    <li>Passengers will be able to book rides for future dates and times.</li>
+    <li>These reservations can be offered to users in the same area.</li>
+    <li>
+        For shared rides, the application automatically suggests options to
+        passengers based on their position and destination.
+    </li>
+</ul>

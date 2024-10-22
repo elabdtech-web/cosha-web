@@ -19,7 +19,7 @@ class DriverController extends Controller
 {
     public function index()
     {
-        $drivers = Driver::where('is_deleted', 0)->get();
+        $drivers = Driver::where('is_deleted', 0)->paginate(10);
 
         $title = '<span style="color: white">Delete Driver!</span>';
         $text = "Are you sure you want to delete?";
@@ -335,13 +335,13 @@ class DriverController extends Controller
     public function show(Driver $driver)
     {
         $driver = Driver::with('user', 'vehicles', 'identity_document', 'license')->find($driver->id);
-        $ride = Ride::where('driver_id', $driver->id)->first();
+        $ride = Ride::where('driver_id', $driver->id)->first() ?? null;
         // completed ride
         $completedRide = Ride::where('driver_id', $driver->id)
-            ->where('status', RideStatus::COMPLETED->value)->get();
+            ->where('status', RideStatus::COMPLETED->value)->paginate(5);
         // cancelled ride
         $cancelledRide = Ride::where('driver_id', $driver->id)
-            ->where('status', RideStatus::CANCELLED->value)->get();
+            ->where('status', RideStatus::CANCELLED->value)->paginate(5);
         return view('admin.drivers.view', compact('driver', 'ride', 'completedRide', 'cancelledRide'));
     }
 

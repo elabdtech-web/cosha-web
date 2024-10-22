@@ -14,13 +14,13 @@
             </a>
             {{-- Passengers --}}
             <a href="{{ route('admin.passengers.index') }}"
-                class="nav_item {{ Route::currentRouteName() == 'admin.passengers.index' ? 'active' : '' }}">
+                class="nav_item {{ Route::currentRouteName() == 'admin.passengers.index' || Route::currentRouteName() == 'admin.passengers.edit' || Route::currentRouteName() == 'admin.passengers.show' ? 'active' : '' }}">
                 <i class='fa fa-user nav_icon'></i>
                 <span class="nav_name">Passengers</span>
             </a>
             {{-- Drivers --}}
             <a href="{{ route('admin.drivers.index') }}"
-                class="nav_item {{ Route::currentRouteName() == 'admin.drivers.index' ? 'active' : '' }}">
+                class="nav_item {{ Route::currentRouteName() == 'admin.drivers.index' || Route::currentRouteName() == 'admin.drivers.edit' || Route::currentRouteName() == 'admin.drivers.show' ? 'active' : '' }}">
                 <i class='fa fa-user nav_icon'></i>
                 <span class="nav_name">Drivers</span>
             </a>

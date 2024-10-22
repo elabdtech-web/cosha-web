@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\AcceptRide;
+use App\Events\CompleteEvent;
+use App\Events\DriverLocation;
+use App\Events\Location;
 use App\Events\PostRide;
+use App\Events\StartedEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RideResource;
 use App\Models\Driver;
@@ -201,6 +205,7 @@ class RideController extends Controller
             ->where('status', RideStatus::ACCEPTED->value)
             ->first();
 
+
         if (!$ride) {
             return response()->json([
                 'status' => false,
@@ -230,6 +235,9 @@ class RideController extends Controller
                     'dropoff_latitude' => $ride->dropoff_latitude,
                     'dropoff_longitude' => $ride->dropoff_longitude,
                 ]);
+                $ride->update([
+                    'status' => RideStatus::STARTED->value,
+                ]);
                 break;
 
             default:
@@ -239,9 +247,15 @@ class RideController extends Controller
                 ], 400);
         }
 
+        // dd($ride);
+        // Dispatch the start event with the ride data
+
+        StartedEvent::dispatch($ride);
+
         return response()->json([
             'status' => true,
             'message' => 'Ride started successfully',
+            'data' => $ride->status,
         ], 200);
     }
 
@@ -431,8 +445,6 @@ class RideController extends Controller
     {
         $request->validate([
             'ride_id' => 'required|exists:rides,id',
-            'longitude' => 'required',
-            'latitude' => 'required',
         ]);
 
         $driver_id = Auth::user()->id;
@@ -451,37 +463,39 @@ class RideController extends Controller
         }
 
         // Switch condition for ride types
-        switch ($ride->type) {
-            case 'daily':
-                // Handle RideDaily start
-                $rideDaily = RideDaily::create([
-                    'ride_id' => $ride->id,
-                    'start_time' => now(),
-                    'complete_time' => now(),
-                ]);
+        // switch ($ride->type) {
+        //     case 'daily':
+        //         // Handle RideDaily start
+        //         $rideDaily = RideDaily::create([
+        //             'ride_id' => $ride->id,
+        //             'start_time' => now(),
+        //             'complete_time' => now(),
+        //         ]);
 
-                break;
+        //         break;
 
-            case 'shared':
-                // Handle RideShared start (not implemented yet)
-                // $rideShared = RideShared::create([...]);
-                break;
+        //     case 'shared':
+        //         // Handle RideShared start (not implemented yet)
+        //         // $rideShared = RideShared::create([...]);
+        //         break;
 
-            case 'night':
-                // Handle RideNight start (not implemented yet)
-                // $rideNight = RideNight::create([...]);
-                break;
+        //     case 'night':
+        //         // Handle RideNight start (not implemented yet)
+        //         // $rideNight = RideNight::create([...]);
+        //         break;
 
-            default:
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Invalid ride type.',
-                ], 400);
-        }
+        //     default:
+        //         return response()->json([
+        //             'status' => false,
+        //             'message' => 'Invalid ride type.',
+        //         ], 400);
+        // }
 
         $ride->update([
             'status' => RideStatus::COMPLETED->value,
         ]);
+
+        CompleteEvent::dispatch($ride);
 
         return response()->json([
             'status' => true,
@@ -668,5 +682,23 @@ class RideController extends Controller
             'message' => 'Shared rides list retrieved successfully.',
             'data' => $rides
         ], 200);
+    }
+
+
+    public function driverLocation(Request $request)
+    {
+        $validatedData = $request->validate([
+            'latitude' => 'required',
+            'longitude' => 'required',
+            'uuid' => 'required',
+        ]);
+
+        Location::dispatch($validatedData);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Location updated successfully.',
+        ]);
+
     }
 }

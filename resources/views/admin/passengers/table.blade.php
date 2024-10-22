@@ -18,8 +18,16 @@
                 <td>{{ $passenger->gender }}</td>
                 <td>{{ $passenger->phone ?? 'N/A' }}</td>
                 <td>{{ $passenger->created_at }}</td>
-                <td><a href="{{ route('admin.passengers.show', $passenger->id) }}"
-                        class="btn btn-primary btn-sm">View</a></td>
+                <td>
+                    {{-- <a href="{{ route('admin.passengers.edit', $passenger->id) }}" class="btn btn-secondary"> <i
+                            class="fa fa-edit"></i></a> --}}
+                    <a href="{{ route('admin.passengers.destroy', $passenger->id) }}" class="btn btn-danger"
+                        data-confirm-delete="true"> <i class="fa fa-trash"></i></a>
+
+                    <a href="{{ route('admin.passengers.show', $passenger->id) }}" class="btn btn-primary">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                </td>
             </tr>
         @endforeach
     </tbody>

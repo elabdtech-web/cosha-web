@@ -14,8 +14,8 @@
                    <div class="row mb-4 location-details">
                        <span class="mb-0">Location details</span>
                        <div class="col-12">
-                           <p class="mb-0 text-sm"> <i class="fa fa-paper-plane mr-2"></i> 2972 Westheimer Rd. Santa
-                               Ana, Illinois 85486</p>
+                           <p class="mb-0 text-sm"> <i class="fa fa-paper-plane mr-2"></i>
+                               {{ $ride->pickup_location ?? 'Not set' }}</p>
                        </div>
                        {{-- vertical dashed line --}}
                        <div class="col-12">
@@ -24,9 +24,8 @@
                        </div>
 
                        <div class="col-12">
-                           <p class="mb-0"><i class="fa fa-circle text-danger"></i> 2972 Westheimer Rd. Santa Ana,
-                               Illinois
-                               85486</p>
+                           <p class="mb-0"><i class="fa fa-circle text-danger"></i>
+                               {{ $ride->dropoff_location ?? 'Not set' }}</p>
                        </div>
                    </div>
                </div>

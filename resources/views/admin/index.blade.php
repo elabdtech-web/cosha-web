@@ -3,16 +3,13 @@
 @section('content')
     <!--main content wrapper-->
     <div class="vh-100">
-        <div class="content ">
+        <div class="content p-3">
             {{-- Heading --}}
             <div class="row">
                 <div class="col-md-12">
                     <p>Hello Admin</p>
-                    <h3>Your Dashboard is Updated</h3>
                 </div>
             </div>
-            {{-- End Heading --}}
-
             {{-- Statistics --}}
             <section class="statistics">
                 <div class="row">
@@ -66,13 +63,10 @@
                     </div>
                 </div>
             </section>
-            {{-- End Statistics --}}
-
             {{-- Recent --}}
             <section class="recent">
                 <div class="row">
-                    {{-- Recent Activities --}}
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">Recent Activities</h5>
@@ -94,11 +88,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {{-- End Recent Activities --}}
-
-                    {{-- Active Drivers --}}
-                    <div class="col-md-6">
+                    </div> --}}
+                    <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">Active Drivers</h5>
@@ -109,19 +100,23 @@
                                         <tr>
                                             <th scope="col">Image</th>
                                             <th scope="col">Name</th>
-                                            <th scope="col">Ride Type</th>
+                                            <th scope="col">Phone</th>
                                             <th scope="col">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <th scope="row"><img src="{{ asset('images/default.png') }}" alt="image"
-                                                    class="rounded-circle" width="50" height="50">
-                                            </th>
-                                            <td>John Doe</td>
-                                            <td>Shared</td>
-                                            <td><a href="#" class="btn btn-primary btn-sm">View</a></td>
-                                        </tr>
+                                        @foreach ($latestDrivers as $item)
+                                            <tr>
+                                                <th scope="row"><img
+                                                        src="{{ isset($item->profile_image) ? Storage::url('images/drivers/' . $item->profile_image) : asset('images/default.png') }}"
+                                                        alt="image" class="rounded-circle" width="50" height="50">
+                                                </th>
+                                                <td>{{ $item->name }}</td>
+                                                <td>{{ $item->phone }}</td>
+                                                <td><a href="{{ route('admin.drivers.show', $item->id) }}"
+                                                        class="btn btn-primary btn-sm">View</a></td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -135,8 +130,8 @@
     </div>
 
     <script type="module">
-        Echo.channel('Accept-Ride')
-            .listen('AcceptRide', (e) => {
+        Echo.channel("location-RIDE-99D82D1A")
+            .listen('StartedEvent', (e) => {
                 console.log(e)
             })
     </script>

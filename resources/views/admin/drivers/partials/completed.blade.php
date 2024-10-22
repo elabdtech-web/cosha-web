@@ -42,6 +42,9 @@
 
         </tbody>
     </table>
+    <div class="d-flex justify-content-center mt-3">
+        {{ $completedRide->links() }}
+    </div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"

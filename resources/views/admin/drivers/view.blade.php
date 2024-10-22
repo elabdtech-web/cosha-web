@@ -3,15 +3,6 @@
 @section('content')
     <div class="vh-100">
         <div class="container my-5">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold">Drivers <span class="text-muted">/ details</span></h4>
-                <div class="action-buttons">
-                    <button class="btn me-2">Edit <i class="fa fa-edit text-success"></i></button>
-                    <button class="btn ">Delete <i class="fa fa-trash text-danger"></i></button>
-                </div>
-            </div>
-            <!-- Main Section -->
             <div class="row">
                 <!-- User Info Section -->
                 <div class="col-md-4">

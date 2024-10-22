@@ -3,14 +3,6 @@
 @section('content')
     <div class="vh-100">
         <div class="container my-2">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold">Passengers <span class="text-muted">/ details</span></h4>
-                <div class="action-buttons">
-                    <button class="btn me-2">Edit <i class="fa fa-edit text-success"></i></button>
-                    <button class="btn ">Delete <i class="fa fa-trash text-danger"></i></button>
-                </div>
-            </div>
             <!-- Main Section -->
             <div class="row">
                 <!-- User Info Section -->
@@ -25,8 +17,6 @@
                             <p class="mb-3">{{ $passenger->gender }}</p>
                             <span class="text-muted">Phone no *</span>
                             <p class="mb-3">{{ $passenger->phone }}</p>
-                            <span class="text-muted">Address *</span>
-                            <p class="">Boston meat club street 29/1, closed end</p>
                         </div>
                     </div>
                 </div>

@@ -20,6 +20,9 @@
                     <div class="table-responsive">
                         @include('admin.drivers.table')
                     </div>
+                    <div class="mt-4 d-flex justify-content-center">
+                        {{ $drivers->links() }}
+                    </div>
                 </div>
             </div>
         </div>

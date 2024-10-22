@@ -18,6 +18,9 @@
                     <div class="table-responsive">
                         @include('admin.passengers.table')
                     </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $passengers->links() }}
+                    </div>
                 </div>
             </div>
         </div>

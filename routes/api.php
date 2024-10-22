@@ -152,6 +152,8 @@ Route::group(['prefix' => 'driver'], function () {
 
         Route::post('/accept/offer', [RideController::class, 'acceptRideOffer']);
 
+        Route::post('/locaiton', [RideController::class, 'driverLocation']);
+
     });
     // End of Authenticated Routes of Driver
 

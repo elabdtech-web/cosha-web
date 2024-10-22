@@ -24,6 +24,8 @@ class RideResource extends JsonResource
             'dropoff_location' => $this->dropoff_location,
             'pickup_latitude' => (float) $this->pickup_latitude,
             'pickup_longitude' => (float) $this->pickup_longitude,
+            'dropoff_latitude' => (float) $this->dropoff_latitude,
+            'dropoff_longitude' => (float) $this->dropoff_longitude,
             'passenger_id' => $this->passenger_id,
             'no_passengers' => $this->no_passengers,
             'passenger_name' => Passenger::find($this->passenger_id)->name ?? null,
