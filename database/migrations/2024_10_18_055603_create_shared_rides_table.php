@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('passenger_id'); // Reference to the passenger
             $table->integer('join_km'); // KM where the passenger joined the ride
             $table->integer('leave_km'); // KM where the passenger left the ride
+            $table->string('status')->default('joining');
             $table->decimal('cost', 8, 2)->nullable(); // Calculated cost for the passenger
             $table->timestamps();
 

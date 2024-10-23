@@ -130,8 +130,8 @@
     </div>
 
     <script type="module">
-        Echo.channel("location-RIDE-99D82D1A")
-            .listen('StartedEvent', (e) => {
+        Echo.channel("channel-name")
+            .listen('TestEvent', (e) => {
                 console.log(e)
             })
     </script>

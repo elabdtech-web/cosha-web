@@ -9,12 +9,11 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class StartedEvent implements ShouldBroadcastNow
+class JoinEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $ride;
-
     /**
      * Create a new event instance.
      */
@@ -30,6 +29,7 @@ class StartedEvent implements ShouldBroadcastNow
      */
     public function broadcastOn(): Channel
     {
+        // dd($this->ride);
         return new Channel('location-' . $this->ride->uuid);
     }
 }

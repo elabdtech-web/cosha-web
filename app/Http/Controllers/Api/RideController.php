@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Events\AcceptRide;
 use App\Events\CompleteEvent;
 use App\Events\DriverLocation;
+use App\Events\JoinEvent;
+use App\Events\LeaveEvent;
 use App\Events\Location;
 use App\Events\PostRide;
 use App\Events\StartedEvent;
@@ -83,7 +85,8 @@ class RideController extends Controller
             $rides = new RideResource($ride);
 
             // Fire an event for Pusher or Broadcasting
-            PostRide::dispatch($rides);
+            // PostRide::dispatch($rides);
+            broadcast(new PostRide($rides))->toOthers();
             return response()->json([
                 'status' => true,
                 'message' => 'Ride created successfully',
@@ -229,6 +232,7 @@ class RideController extends Controller
                     'join_km' => self::START_KM,
                     'leave_km' => $ride->distance,
                     'cost' => $ride->ride_price,
+                    'status' => 'joining',
                     'is_main_passenger' => self::IS_PASSENGER,
                     'pickup_latitude' => $ride->pickup_latitude,
                     'pickup_longitude' => $ride->pickup_longitude,
@@ -250,7 +254,8 @@ class RideController extends Controller
         // dd($ride);
         // Dispatch the start event with the ride data
 
-        StartedEvent::dispatch($ride);
+        // StartedEvent::dispatch($ride);
+        event(new StartedEvent($ride));
 
         return response()->json([
             'status' => true,
@@ -283,6 +288,7 @@ class RideController extends Controller
             'passenger_id' => $request->passenger_id,
             'join_km' => $request->join_km,
             'leave_km' => $request->leave_km,
+            'status' => 'joining',
             'pickup_latitude' => $request->pickup_latitude,
             'pickup_longitude' => $request->pickup_longitude,
             'dropoff_latitude' => $request->dropoff_latitude,
@@ -291,6 +297,8 @@ class RideController extends Controller
 
         // Calculate ride price dynamically based on Cosha concept
         $this->ridePrices($ride);
+
+        JoinEvent::dispatch($ride);
 
         return response()->json([
             'status' => true,
@@ -327,14 +335,18 @@ class RideController extends Controller
             ], 404);
         }
 
-        $passengerRide->delete();
+        $passengerRide->update([
+            'status' => 'leaving'
+        ]);
 
+        LeaveEvent::dispatch($ride);
         // Recalculate ride price after passenger leaves
-        $this->calculateRideCost($ride->id);
+        // $this->calculateRideCost($ride->id);
 
         return response()->json([
             'status' => true,
-            'message' => 'Passenger left successfully.'
+            'message' => 'Passenger left successfully.',
+            'fare' => $passengerRide->cost
         ], 200);
     }
 
@@ -372,8 +384,12 @@ class RideController extends Controller
         foreach ($ride->sharedRides as $sharedRide) {
             $cost = 0;
 
-            for ($i = $sharedRide->join_km; $i <= $sharedRide->leave_km; $i++) {
-                $discount = self::PER_KM_PRICE * $perKmPrices->where('km_no', $i)->first()['discount'] / 100;
+            $priceData = $perKmPrices->where('km_no', $i)->first();
+
+            $discount_percentage = $priceData ? $priceData['discount'] : 0;
+
+            for ($i = $sharedRide->join_km ?? 1; $i <= $sharedRide->leave_km ?? 3; $i++) {
+                $discount = self::PER_KM_PRICE * $discount_percentage / 100;
 
                 $cost += self::PER_KM_PRICE - $discount;
             }
@@ -461,35 +477,6 @@ class RideController extends Controller
                 'message' => 'Ride not found or already completed.',
             ], 404);
         }
-
-        // Switch condition for ride types
-        // switch ($ride->type) {
-        //     case 'daily':
-        //         // Handle RideDaily start
-        //         $rideDaily = RideDaily::create([
-        //             'ride_id' => $ride->id,
-        //             'start_time' => now(),
-        //             'complete_time' => now(),
-        //         ]);
-
-        //         break;
-
-        //     case 'shared':
-        //         // Handle RideShared start (not implemented yet)
-        //         // $rideShared = RideShared::create([...]);
-        //         break;
-
-        //     case 'night':
-        //         // Handle RideNight start (not implemented yet)
-        //         // $rideNight = RideNight::create([...]);
-        //         break;
-
-        //     default:
-        //         return response()->json([
-        //             'status' => false,
-        //             'message' => 'Invalid ride type.',
-        //         ], 400);
-        // }
 
         $ride->update([
             'status' => RideStatus::COMPLETED->value,
@@ -657,17 +644,17 @@ class RideController extends Controller
         // Query rides that match the conditions for shared rides:
         $rides = Ride::where('status', RideStatus::STARTED->value)
             ->where('type', 'shared')
-            ->with('sharedRides')
-            ->where(function ($query) use ($pickup_latitude, $pickup_longitude, $dropoff_latitude, $dropoff_longitude) {
-                // Pickup should be at or before the requested pickup point (latitude and longitude)
-                $query->where('pickup_latitude', '<=', $pickup_latitude)
-                    ->where('pickup_longitude', '<=', $pickup_longitude);
+            ->with('sharedRides')->get();
+        // ->where(function ($query) use ($pickup_latitude, $pickup_longitude, $dropoff_latitude, $dropoff_longitude) {
+        //     // Pickup should be at or before the requested pickup point (latitude and longitude)
+        //     $query->where('pickup_latitude', '<=', $pickup_latitude)
+        //         ->where('pickup_longitude', '<=', $pickup_longitude);
 
-                // Dropoff should be at or after the requested dropoff point (latitude and longitude)
-                $query->where('dropoff_latitude', '>=', $dropoff_latitude)
-                    ->where('dropoff_longitude', '>=', $dropoff_longitude);
-            })
-            ->get();
+        //     // Dropoff should be at or after the requested dropoff point (latitude and longitude)
+        //     $query->where('dropoff_latitude', '>=', $dropoff_latitude)
+        //         ->where('dropoff_longitude', '>=', $dropoff_longitude);
+        // })
+
 
         if (!$rides) {
             return response([
@@ -700,5 +687,34 @@ class RideController extends Controller
             'message' => 'Location updated successfully.',
         ]);
 
+    }
+
+
+    public function rideDetails(Request $request)
+    {
+
+        $request->validate([
+            'ride_id' => 'required|exists:rides,id',
+        ]);
+
+
+        $ride = Ride::where('id', $request->ride_id)
+            ->with('sharedRides.passenger')
+            ->first();
+
+
+        if (!$ride) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ride not found.',
+            ], 404);
+        }
+
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ride details retrieved successfully.',
+            'data' => $ride
+        ], 200);
     }
 }

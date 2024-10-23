@@ -93,6 +93,8 @@ Route::group(['prefix' => 'passenger'], function () {
 
         Route::post('rides/shared-list', [RideController::class, 'sharedRideList']);
 
+        Route::post('rides/details', [RideController::class, 'rideDetails']);
+
     });
     // End of Authenticated Routes of Passenger
 
@@ -153,6 +155,8 @@ Route::group(['prefix' => 'driver'], function () {
         Route::post('/accept/offer', [RideController::class, 'acceptRideOffer']);
 
         Route::post('/locaiton', [RideController::class, 'driverLocation']);
+
+        Route::post('rides/details', [RideController::class, 'rideDetails']);
 
     });
     // End of Authenticated Routes of Driver

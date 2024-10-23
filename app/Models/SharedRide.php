@@ -15,6 +15,7 @@ class SharedRide extends Model
         'join_km',
         'leave_km',
         'cost',
+        'status',
         'is_main_passenger',
         'pickup_latitude',
         'pickup_longitude',
@@ -32,4 +33,5 @@ class SharedRide extends Model
     {
         return $this->belongsTo(Passenger::class);
     }
+
 }
